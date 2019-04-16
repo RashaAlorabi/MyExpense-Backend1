@@ -95,3 +95,32 @@ class StudentCreateUpdateSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Student
 		fields = ['name', 'grade', 'limit', 'health']
+
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    category= CategorySerializer()
+    class Meta:
+        model = Item
+        fields = [
+            'id',
+			'name',
+			'price',
+			'description',
+			'stock',
+            'image',
+			'category',
+            'school'
+        ]
+
+
+class ItemCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['name', 'price', 'description', 'stock', 'image', 'category', 'school']

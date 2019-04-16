@@ -13,6 +13,11 @@ from .views import (
     StudentCreateView,
     StudentUpdateView,
     StudentDeleteView,
+    CategoryListView,
+    ItemAPIView,
+    ItemCreateView,
+    ItemUpdateView,
+    ItemDeleteView,
     
 )
 
@@ -26,4 +31,12 @@ urlpatterns = [
     path('student/add/', StudentCreateView.as_view(), name='student-create'),
     path('student/<int:student_id>/update', StudentUpdateView.as_view(), name='student-update'),
     path('student/<int:student_id>/delete', StudentDeleteView.as_view(), name='student-delete'),
-]
+
+    path('category/', CategoryListView.as_view(), name='category'),
+
+    path('list/item/', ItemAPIView.as_view(), name='items'),
+    path('create/item/', ItemCreateView.as_view(), name='create-item'),
+    path('update/item/<int:item_id>', ItemUpdateView.as_view(), name='update-item'),
+    path('delete/item/<int:item_id>', ItemDeleteView.as_view(), name='delete-item'),
+
+ ]

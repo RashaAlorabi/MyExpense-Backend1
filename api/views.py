@@ -6,18 +6,21 @@ from rest_framework.generics import (
     RetrieveAPIView,
     RetrieveUpdateAPIView,
     DestroyAPIView,
-   
 )
 
 from .serializers import (
-    UserCreateSerializer,
-    UserUpdateSerializer,
-    UserSerializer,
-    ParentDetailSerializer,
-    ParentCreateUpdateSerializer,
-    SchoolDetailSerializer,
-    StudentCreateUpdateSerializer, 
-    StudentListSerializer
+	UserCreateSerializer,
+	UserUpdateSerializer,
+	UserSerializer,
+	ParentDetailSerializer,
+	ParentListSerializer,
+	ParentCreateUpdateSerializer,
+	SchoolDetailSerializer,
+	StudentCreateUpdateSerializer, 
+	StudentListSerializer,
+	ItemSerializer,
+	ItemCreateUpdateSerializer,
+	CategorySerializer,
 )
 
 from rest_framework.views import APIView
@@ -123,4 +126,29 @@ class StudentDeleteView(DestroyAPIView):
     lookup_url_kwarg = 'student_id'
     # permission_classes = [IsAuthenticated, ]
 
-        
+
+class CategoryListView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class ItemAPIView(ListAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+
+class ItemCreateView(CreateAPIView):
+    serializer_class = ItemCreateUpdateSerializer
+
+class ItemUpdateView(RetrieveUpdateAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemCreateUpdateSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'item_id'
+
+    
+class ItemDeleteView(DestroyAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'item_id'

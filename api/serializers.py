@@ -60,7 +60,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'email']
 
 
-
 class ParentCreateUpdateSerializer(serializers.ModelSerializer):
     parent = ParentCreateSerializer()
     class Meta:
@@ -72,8 +71,14 @@ class ParentDetailSerializer(serializers.ModelSerializer):
     parent = UserSerializer()
     class Meta:
         model = Parent
-        fields = ['parent', 'image', 'expense']
+        fields = ['id','parent','image', 'expense']
 
+
+class ParentListSerializer(serializers.ModelSerializer):
+    parents = ParentDetailSerializer(many=True)
+    class Meta:
+        model = School
+        fields = ['parents']
         
 class SchoolDetailSerializer(serializers.ModelSerializer):
     principal = UserSerializer()

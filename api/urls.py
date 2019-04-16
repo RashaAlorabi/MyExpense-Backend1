@@ -17,7 +17,7 @@ from .views import (
     ItemCreateView,
     ItemUpdateView,
     ItemDeleteView,
-    
+    ParentDeleteView,
 )
 
 urlpatterns = [
@@ -26,7 +26,9 @@ urlpatterns = [
     path('register/', UserCreateAPIView.as_view(), name='register-parent'),
     path('profile/school/', SchoolAPIView.as_view(), name='profile-school'),
     path('parent/create/school/', ParentCreateAPIView.as_view(), name='parent-create-school'),
+    path('parent/<int:parent_id>/delete/', ParentDeleteView.as_view(), name='parent-delete'),
     # path('profile/parent/', ParentAPIView.as_view(), name='profile-parent'),
+
     path('list/parent/', ParentListAPIView.as_view(), name='list-parent'),
 
     path('students/', StudentListView.as_view(), name='students-list'),

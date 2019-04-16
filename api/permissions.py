@@ -6,8 +6,14 @@ class IsPrincipal(BasePermission):
     # print("You are not the principal of this School.")
     
     def has_object_permission(self, request, view, obj):
-        print("HI--------")
         if obj.principal == request.user:
-            print("HI--------")
+            return True
+        return False
+
+class IsPrincipalDe(BasePermission):
+    message = "You are not the principal of this School."
+
+    def has_object_permission(self, request, view, obj):
+        if obj.school.principal == request.user:
             return True
         return False

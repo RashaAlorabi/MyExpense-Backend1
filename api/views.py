@@ -121,6 +121,12 @@ class StudentListView(ListAPIView):
     serializer_class = StudentListSerializer
 
 
+class SchoolStudentListView(APIView):
+    serializer_class = SchoolStudentListSerializer
+    permission_classes = [IsAuthenticated]
+
+
+
 class StudentDetailView(RetrieveUpdateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentListSerializer

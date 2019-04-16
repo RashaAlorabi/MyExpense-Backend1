@@ -9,6 +9,7 @@ from .views import (
     ParentCreateAPIView,
     SchoolAPIView,
     StudentListView,
+    StudentDetailView,
     StudentCreateView,
     StudentUpdateView,
     StudentDeleteView,
@@ -30,7 +31,9 @@ urlpatterns = [
     path('list/parent/', ParentListAPIView.as_view(), name='list-parent'),
 
     path('students/', StudentListView.as_view(), name='students-list'),
-    path('student/add/', StudentCreateView.as_view(), name='student-create'),
+    path('student/<int:student_id>/detail/', StudentDetailView.as_view(), name='students-list'),
+    path('student/<int:parent_id>/add/', StudentCreateView.as_view(), name='student-create'),
+    
     path('student/<int:student_id>/update/', StudentUpdateView.as_view(), name='student-update'),
     path('student/<int:student_id>/delete/', StudentDeleteView.as_view(), name='student-delete'),
   

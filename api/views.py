@@ -12,6 +12,7 @@ from .serializers import (
 	UserCreateSerializer,
 	UserUpdateSerializer,
 	UserSerializer,
+    ParentListSerializer,
 	ParentDetailSerializer,
 	ParentCreateUpdateSerializer,
 	SchoolDetailSerializer,
@@ -31,7 +32,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 from api.models import School, Parent, Student, Category, Item, Order, CartItem
 from django.contrib.auth.models import User
-from .permissions import IsPrincipal
+from .permissions import IsPrincipal, IsPrincipalDe
 
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
@@ -85,9 +86,21 @@ class ParentCreateAPIView(CreateAPIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-class ParentListAPIView(ListAPIView):
+class ParentListAPIView(APIView):
+    serializer_class = ParentListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        school = School.objects.get(principal= request.user)
+        serializer = self.serializer_class(school, context={'request': request})
+        return Response(serializer.data, status=HTTP_200_OK)
+    
+
+class ParentDeleteView(DestroyAPIView):
     queryset = Parent.objects.all()
-    serializer_class = ParentDetailSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'parent_id'
+    permission_classes = [IsPrincipalDe]
 
 
 class SchoolAPIView(APIView):

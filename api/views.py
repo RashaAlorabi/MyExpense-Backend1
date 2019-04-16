@@ -13,7 +13,6 @@ from .serializers import (
 	UserUpdateSerializer,
 	UserSerializer,
 	ParentDetailSerializer,
-	ParentListSerializer,
 	ParentCreateUpdateSerializer,
 	SchoolDetailSerializer,
 	StudentCreateUpdateSerializer, 

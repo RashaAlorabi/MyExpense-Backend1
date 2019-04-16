@@ -15,6 +15,7 @@ from .serializers import (
     ParentListSerializer,
 	ParentDetailSerializer,
 	ParentCreateUpdateSerializer,
+    SchoolStudentListSerializer,
 	SchoolDetailSerializer,
 	StudentCreateUpdateSerializer, 
 	StudentListSerializer,
@@ -69,8 +70,6 @@ class ParentCreateAPIView(CreateAPIView):
         serializer = self.serializer_class(data=my_data)
         if serializer.is_valid():
             valid_data = serializer.data
-            print("valid_data ===> ", valid_data)
-            print("valid_data_parent ===> ", valid_data['parent']['username'])
             new_data_user = {
                 'username': valid_data['parent']['username'],
             }
@@ -79,9 +78,11 @@ class ParentCreateAPIView(CreateAPIView):
             user_parent.save()
             parent_new_data = {
                 'parent' : User.objects.get(id=user_parent.id),
-                'school': School.objects.get(principal=request.user),
             }
             parent_obj = Parent.objects.create(**parent_new_data)
+            School_obj = School.objects.get(principal=request.user)
+            parent_obj.school.add(School_obj)
+            parent_obj.save()
             return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
@@ -100,7 +101,7 @@ class ParentDeleteView(DestroyAPIView):
     queryset = Parent.objects.all()
     lookup_field = 'id'
     lookup_url_kwarg = 'parent_id'
-    permission_classes = [IsPrincipalDe]
+    # permission_classes = [IsPrincipalDe]
 
 
 class SchoolAPIView(APIView):
@@ -124,8 +125,11 @@ class StudentListView(ListAPIView):
 class SchoolStudentListView(APIView):
     serializer_class = SchoolStudentListSerializer
     permission_classes = [IsAuthenticated]
-
-
+    
+    def get(self, request, format=None):
+        school = School.objects.get(principal= request.user)
+        serializer = self.serializer_class(school, context={'request': request})
+        return Response(serializer.data, status=HTTP_200_OK)
 
 class StudentDetailView(RetrieveUpdateAPIView):
     queryset = Student.objects.all()
@@ -147,10 +151,11 @@ class StudentCreateView(CreateAPIView):
         if serializer.is_valid():
             valid_data = serializer.data
             new_student = {
-                'parent': Parent.objects.get(id=parint_id),
+                 'parent': Parent.objects.get(id=parint_id),
                  'name': valid_data['name'],
                  'grade': valid_data['grade'],
                  'health': valid_data['health'],
+                 'school': School.objects.get(principal=request.user),
             }
             student = Student.objects.create(**new_student)
             return Response(valid_data, status=HTTP_200_OK)

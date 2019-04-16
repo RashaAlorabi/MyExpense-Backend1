@@ -17,7 +17,7 @@ class Parent(models.Model):
     parent = models.OneToOneField(User, on_delete=models.CASCADE,)
     image = models.ImageField(upload_to='parent_image', null=True, blank=True)
     expense = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="parents")
+    school = models.ManyToManyField(School, related_name="parents")
 
     def __str__(self):
         return self.parent.first_name
@@ -27,6 +27,7 @@ class Student(models.Model):
     name = models.CharField(max_length=50)
     grade = models.CharField(max_length=50)
     parent = models.ForeignKey(Parent, on_delete = models.CASCADE, related_name='child')
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='students')
     limit = models.PositiveIntegerField(validators=[MinValueValidator(1)] , default=1)
     image = models.ImageField(upload_to='student_image', null=True, blank=True)
     health = models.CharField(max_length=50)

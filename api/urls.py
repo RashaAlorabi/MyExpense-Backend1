@@ -34,7 +34,7 @@ urlpatterns = [
     path('list/parent/', ParentListAPIView.as_view(), name='list-parent'),
 
     path('students/', StudentListView.as_view(), name='students-list'),
-    path('students/school', SchoolStudentListView.as_view(), name='students-list'),
+    path('students/school/', SchoolStudentListView.as_view(), name='students-list'),
     path('student/<int:student_id>/detail/', StudentDetailView.as_view(), name='students-list'),
     path('student/<int:parent_id>/add/', StudentCreateView.as_view(), name='student-create'),
     

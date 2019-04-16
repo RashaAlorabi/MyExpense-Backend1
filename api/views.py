@@ -107,10 +107,38 @@ class StudentListView(ListAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentListSerializer
 
+
+class StudentDetailView(RetrieveUpdateAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentListSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'student_id'
+    # permission_classes = [IsAuthenticated, ]
+
+
 class StudentCreateView(CreateAPIView):
     serializer_class = StudentCreateUpdateSerializer
     # permission_classes = [IsAuthenticated, ]
     
+    def post(self, request, *args, **kwargs):
+        argm = kwargs
+        parint_id = argm['parent_id']
+        my_data = request.data
+        serializer = self.serializer_class(data=my_data)
+        if serializer.is_valid():
+            valid_data = serializer.data
+            new_student = {
+                'parent': Parent.objects.get(id=parint_id),
+                 'name': valid_data['name'],
+                 'grade': valid_data['grade'],
+                 'health': valid_data['health'],
+            }
+            student = Student.objects.create(**new_student)
+            return Response(valid_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+
+
 
 class StudentUpdateView(RetrieveUpdateAPIView):
     queryset = Student.objects.all()

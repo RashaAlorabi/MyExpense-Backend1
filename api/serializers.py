@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 from rest_framework_jwt.settings import api_settings
-
 from .models import School, Parent, Student, Category, Item, Order, CartItem
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -68,10 +67,10 @@ class ParentCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class StudentParentSerializer1(serializers.ModelSerializer):
-    parent = UserSerializer()
+    user = UserSerializer()
     class Meta:
         model = Parent
-        fields = ['parent', 'image', 'wallet'] 
+        fields = ['user', 'image', 'wallet'] 
 
 
 class StudentListSerializer(serializers.ModelSerializer): 
@@ -88,25 +87,31 @@ class ParentDetailSerializer(serializers.ModelSerializer):
         model = Parent
         fields = ['id','parent','image', 'wallet']
 
-class ParentListSerializer(serializers.ModelSerializer):
-    parents = ParentDetailSerializer(many=True)
-    class Meta:
-        model = School
-        fields = ['parents']
+# class ParentListSerializer(serializers.ModelSerializer):
+#     # parents = ParentDetailSerializer(many=True)
+#     class Meta:
+#         model = School
+#         fields = ['parents']
         
 class SchoolDetailSerializer(serializers.ModelSerializer):
     school_admin = UserSerializer()
-    parents = ParentDetailSerializer(many=True)
+    # parents = ParentDetailSerializer(many=True)
     students = StudentListSerializer(many=True)
     class Meta:
         model = School
-        fields = ['name', 'school_admin', 'parents', 'students']
+        fields = ['name', 'school_admin', 'students']
 
+class ParentCreateSer(serializers.ModelSerializer):
+    class Meta:
+        model = Parent
+        fields = ['NationalـId']
         
 class StudentCreateUpdateSerializer(serializers.ModelSerializer):
+    parent_id = serializers.IntegerField(min_value=1, max_value=999999999)
+    email = serializers.EmailField()
     class Meta:
         model = Student
-        fields = ['name', 'grade', 'limit', 'health']
+        fields = ['parent_id', 'email', 'name', 'grade', 'limit', 'health']
 
 class SchoolStudentListSerializer(serializers.ModelSerializer):
     students = StudentListSerializer(many=True)

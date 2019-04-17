@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator
 
 class School(models.Model):
     name = models.CharField(max_length=50)
-    principal = models.OneToOneField(User, on_delete=models.CASCADE,)
+    school_admin = models.OneToOneField(User, on_delete=models.CASCADE,)
     
     def __str__ (self):
         return self.name
@@ -16,11 +16,11 @@ class School(models.Model):
 class Parent(models.Model):
     parent = models.OneToOneField(User, on_delete=models.CASCADE,)
     image = models.ImageField(upload_to='parent_image', null=True, blank=True)
-    expense = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
+    wallet = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
     school = models.ManyToManyField(School, related_name="parents")
 
     def __str__(self):
-        return self.parent.first_name
+        return self.parent.username
 
 
 class Student(models.Model):

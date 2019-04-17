@@ -1,12 +1,12 @@
 from rest_framework.permissions import BasePermission
 
 
-class IsPrincipal(BasePermission):
-    message = "You are not the principal of this School."
-    # print("You are not the principal of this School.")
+class IsSchoolAdmin(BasePermission):
+    message = "You are not the admin  of this School."
+    # print("You are not the the admin  of this School.")
     
     def has_object_permission(self, request, view, obj):
-        if obj.principal == request.user:
+        if obj.school_admin == request.user:
             return True
         return False
 
@@ -14,6 +14,6 @@ class IsPrincipalDe(BasePermission):
     message = "You are not the principal of this School."
 
     def has_object_permission(self, request, view, obj):
-        if obj.school.principal == request.user:
+        if obj.school.school_admin == request.user:
             return True
         return False

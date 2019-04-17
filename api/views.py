@@ -33,7 +33,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 from api.models import School, Parent, Student, Category, Item, Order, CartItem
 from django.contrib.auth.models import User
-from .permissions import IsPrincipal, IsPrincipalDe
+from .permissions import IsSchoolAdmin, IsPrincipalDe
 
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
@@ -80,7 +80,7 @@ class ParentCreateAPIView(CreateAPIView):
                 'parent' : User.objects.get(id=user_parent.id),
             }
             parent_obj = Parent.objects.create(**parent_new_data)
-            School_obj = School.objects.get(principal=request.user)
+            School_obj = School.objects.get(school_admin=request.user)
             parent_obj.school.add(School_obj)
             parent_obj.save()
             return Response(valid_data, status=HTTP_200_OK)
@@ -92,7 +92,7 @@ class ParentListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        school = School.objects.get(principal= request.user)
+        school = School.objects.get(school_admin= request.user)
         serializer = self.serializer_class(school, context={'request': request})
         return Response(serializer.data, status=HTTP_200_OK)
     
@@ -106,15 +106,15 @@ class ParentDeleteView(DestroyAPIView):
 
 class SchoolAPIView(APIView):
     serializer_class = SchoolDetailSerializer
-    permission_classes = [IsAuthenticated, IsPrincipal]
+    permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request, format=None):
         try:
-            school = School.objects.get(principal=request.user)
+            school = School.objects.get(school_admin=request.user)
             serializer = self.serializer_class(school, context={'request': request})
             return Response(serializer.data, status=HTTP_200_OK)
         except:
-            return Response({"message": "You are not a principle"}, status=HTTP_400_BAD_REQUEST)
+            return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
 
 
 class StudentListView(ListAPIView):
@@ -127,7 +127,7 @@ class SchoolStudentListView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, format=None):
-        school = School.objects.get(principal= request.user)
+        school = School.objects.get(school_admin= request.user)
         serializer = self.serializer_class(school, context={'request': request})
         return Response(serializer.data, status=HTTP_200_OK)
 
@@ -155,7 +155,7 @@ class StudentCreateView(CreateAPIView):
                  'name': valid_data['name'],
                  'grade': valid_data['grade'],
                  'health': valid_data['health'],
-                 'school': School.objects.get(principal=request.user),
+                 'school': School.objects.get(school_admin=request.user),
             }
             student = Student.objects.create(**new_student)
             return Response(valid_data, status=HTTP_200_OK)

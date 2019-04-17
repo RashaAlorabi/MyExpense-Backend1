@@ -71,7 +71,7 @@ class StudentParentSerializer1(serializers.ModelSerializer):
     parent = UserSerializer()
     class Meta:
         model = Parent
-        fields = ['parent', 'image', 'expense'] 
+        fields = ['parent', 'image', 'wallet'] 
 
 
 class StudentListSerializer(serializers.ModelSerializer): 
@@ -86,7 +86,7 @@ class ParentDetailSerializer(serializers.ModelSerializer):
     # child = StudentListSerializer(many=True)
     class Meta:
         model = Parent
-        fields = ['id','parent','image', 'expense']
+        fields = ['id','parent','image', 'wallet']
 
 class ParentListSerializer(serializers.ModelSerializer):
     parents = ParentDetailSerializer(many=True)
@@ -95,12 +95,12 @@ class ParentListSerializer(serializers.ModelSerializer):
         fields = ['parents']
         
 class SchoolDetailSerializer(serializers.ModelSerializer):
-    principal = UserSerializer()
+    school_admin = UserSerializer()
     parents = ParentDetailSerializer(many=True)
     students = StudentListSerializer(many=True)
     class Meta:
         model = School
-        fields = ['name', 'principal', 'parents', 'students']
+        fields = ['name', 'school_admin', 'parents', 'students']
 
         
 class StudentCreateUpdateSerializer(serializers.ModelSerializer):
@@ -111,7 +111,7 @@ class StudentCreateUpdateSerializer(serializers.ModelSerializer):
 class SchoolStudentListSerializer(serializers.ModelSerializer):
     students = StudentListSerializer(many=True)
     class Meta:
-        model = Parent
+        model = School
         fields = ['students']
         
 class CategorySerializer(serializers.ModelSerializer):

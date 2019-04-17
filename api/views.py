@@ -141,17 +141,17 @@ class StudentDetailView(RetrieveUpdateAPIView):
 
 class StudentCreateView(CreateAPIView):
     serializer_class = StudentCreateUpdateSerializer
-    # permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, ]
     
     def post(self, request, *args, **kwargs):
         argm = kwargs
-        parint_id = argm['parent_id']
+        parent_id = argm['parent_id']
         my_data = request.data
         serializer = self.serializer_class(data=my_data)
         if serializer.is_valid():
             valid_data = serializer.data
             new_student = {
-                 'parent': Parent.objects.get(id=parint_id),
+                 'parent': Parent.objects.get(id=parent_id),
                  'name': valid_data['name'],
                  'grade': valid_data['grade'],
                  'health': valid_data['health'],

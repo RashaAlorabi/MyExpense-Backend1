@@ -5,8 +5,8 @@ from .views import (
     UserCreateAPIView,
     UserUpdateAPIView,
     # ParentAPIView,
-    ParentListAPIView,
-    ParentCreateAPIView,
+    # ParentListAPIView,
+    # ParentCreateAPIView,
     SchoolAPIView,
     StudentListView,
     SchoolStudentListView,
@@ -19,7 +19,7 @@ from .views import (
     ItemCreateView,
     ItemUpdateView,
     ItemDeleteView,
-    ParentDeleteView,
+    # ParentDeleteView,
 )
 
 urlpatterns = [
@@ -27,13 +27,13 @@ urlpatterns = [
     path('school/login/', obtain_jwt_token, name='admin-login'),
     # path('school/register/parent/', UserCreateAPIView.as_view(), name='register-parent'),
     path('school/profile/', SchoolAPIView.as_view(), name='school-profile'),
-    path('parent/account/', ParentCreateAPIView.as_view(), name='parent-account'),
-    path('parent/<int:parent_id>/delete/', ParentDeleteView.as_view(), name='parent-delete'),
+    # path('parent/account/', ParentCreateAPIView.as_view(), name='parent-account'),
+    # path('parent/<int:parent_id>/delete/', ParentDeleteView.as_view(), name='parent-delete'),
     # path('profile/parent/', ParentAPIView.as_view(), name='profile-parent'),
 
-    path('parent/list/', ParentListAPIView.as_view(), name='parent-list'),
+    # path('parent/list/', ParentListAPIView.as_view(), name='parent-list'),
 
-    path('student/<int:parent_id>/add/', StudentCreateView.as_view(), name='student-add'),
+    path('student/add/', StudentCreateView.as_view(), name='student-add'),
     path('students/list/', StudentListView.as_view(), name='students-list'),
     
     path('student/<int:student_id>/detail/', StudentDetailView.as_view(), name='students-detail'),

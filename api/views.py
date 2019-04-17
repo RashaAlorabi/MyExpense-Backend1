@@ -8,11 +8,13 @@ from rest_framework.generics import (
     DestroyAPIView,
 )
 
+from django.utils.crypto import get_random_string
+
 from .serializers import (
 	UserCreateSerializer,
 	UserUpdateSerializer,
 	UserSerializer,
-    ParentListSerializer,
+    # ParentListSerializer,
 	ParentDetailSerializer,
 	ParentCreateUpdateSerializer,
     SchoolStudentListSerializer,
@@ -23,6 +25,9 @@ from .serializers import (
 	ItemCreateUpdateSerializer,
 	CategorySerializer,
 )
+
+from django.core.mail import send_mail
+from django.conf import settings
 
 from rest_framework.views import APIView
 
@@ -87,21 +92,21 @@ class ParentCreateAPIView(CreateAPIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-class ParentListAPIView(APIView):
-    serializer_class = ParentListSerializer
-    permission_classes = [IsAuthenticated]
+# class ParentListAPIView(APIView):
+#     serializer_class = ParentListSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request, format=None):
-        school = School.objects.get(school_admin= request.user)
-        serializer = self.serializer_class(school, context={'request': request})
-        return Response(serializer.data, status=HTTP_200_OK)
+#     def get(self, request, format=None):
+#         school = School.objects.get(school_admin= request.user)
+#         serializer = self.serializer_class(school, context={'request': request})
+#         return Response(serializer.data, status=HTTP_200_OK)
     
 
-class ParentDeleteView(DestroyAPIView):
-    queryset = Parent.objects.all()
-    lookup_field = 'id'
-    lookup_url_kwarg = 'parent_id'
-    # permission_classes = [IsPrincipalDe]
+# class ParentDeleteView(DestroyAPIView):
+#     queryset = Parent.objects.all()
+#     lookup_field = 'id'
+#     lookup_url_kwarg = 'parent_id'
+#     # permission_classes = [IsPrincipalDe]
 
 
 class SchoolAPIView(APIView):
@@ -109,12 +114,12 @@ class SchoolAPIView(APIView):
     permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request, format=None):
-        try:
-            school = School.objects.get(school_admin=request.user)
-            serializer = self.serializer_class(school, context={'request': request})
-            return Response(serializer.data, status=HTTP_200_OK)
-        except:
-            return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
+        # try:
+        school = School.objects.get(school_admin=request.user)
+        serializer = self.serializer_class(school, context={'request': request})
+        return Response(serializer.data, status=HTTP_200_OK)
+        # except:
+        #     return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
 
 
 class StudentListView(ListAPIView):
@@ -139,24 +144,43 @@ class StudentDetailView(RetrieveUpdateAPIView):
     # permission_classes = [IsAuthenticated, ]
 
 
+
+
+# hear will change this list 
 class StudentCreateView(CreateAPIView):
     serializer_class = StudentCreateUpdateSerializer
-    permission_classes = [IsAuthenticated, ]
+    # permission_classes = [IsAuthenticated, ]
     
     def post(self, request, *args, **kwargs):
-        argm = kwargs
-        parent_id = argm['parent_id']
         my_data = request.data
         serializer = self.serializer_class(data=my_data)
         if serializer.is_valid():
             valid_data = serializer.data
+            user_obj , created = User.objects.get_or_create(username = "par"+str(valid_data['parent_id']), email=valid_data['email'])
+            if created:
+                password = get_random_string()
+                user_obj.set_password(password)
+                user_obj.save()
+                parent_obj = Parent.objects.create(**{
+                    'user' : user_obj
+                })
+                subject = "معلومات الدخول إلى نظام مصروفي"
+                message = " "+password+" كلمة المرور \n "+user_obj.username+" اسم المستخدم"
+
+                """ Name of user """
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [user_obj.email]
+                send_mail( subject, message, email_from, recipient_list )
+            else:
+                parent_obj = Parent.objects.get(user=user_obj)
+
             new_student = {
-                 'parent': Parent.objects.get(id=parent_id),
+                 'parent': parent_obj,
                  'name': valid_data['name'],
                  'grade': valid_data['grade'],
                  'health': valid_data['health'],
                  'school': School.objects.get(school_admin=request.user),
-            }
+                }
             student = Student.objects.create(**new_student)
             return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

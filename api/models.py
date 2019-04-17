@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 from django.dispatch import receiver
-from django.core.validators import MinValueValidator 
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class School(models.Model):
@@ -14,13 +14,12 @@ class School(models.Model):
 
 
 class Parent(models.Model):
-    parent = models.OneToOneField(User, on_delete=models.CASCADE,)
+    user = models.OneToOneField(User, on_delete=models.CASCADE,)
     image = models.ImageField(upload_to='parent_image', null=True, blank=True)
     wallet = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
-    # school = models.ManyToManyField(School, related_name="parents")
-
+    # NationalـId = models.PositiveIntegerField(primary_key=True, validators=[MinValueValidator(1), MaxValueValidator(9999999999)], null=False, blank=False)
     def __str__(self):
-        return self.parent.username
+        return self.user.username
 
 
 class Student(models.Model):

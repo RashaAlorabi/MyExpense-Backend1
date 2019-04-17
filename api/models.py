@@ -17,7 +17,7 @@ class Parent(models.Model):
     parent = models.OneToOneField(User, on_delete=models.CASCADE,)
     image = models.ImageField(upload_to='parent_image', null=True, blank=True)
     wallet = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
-    school = models.ManyToManyField(School, related_name="parents")
+    # school = models.ManyToManyField(School, related_name="parents")
 
     def __str__(self):
         return self.parent.username

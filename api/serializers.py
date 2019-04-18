@@ -77,7 +77,7 @@ class StudentListSerializer(serializers.ModelSerializer):
     parent=StudentParentSerializer1()
     class Meta:
         model = Student
-        fields = ['id','name', 'grade', 'limit', 'health','parent']
+        fields = ['id','name', 'grade', 'limit', 'health','parent','image']
 
 
 class ParentDetailSerializer(serializers.ModelSerializer):
@@ -111,12 +111,12 @@ class StudentCreateSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
     class Meta:
         model = Student
-        fields = ['parent_id', 'email', 'name', 'grade', 'limit', 'health']
+        fields = ['parent_id', 'email', 'name', 'grade', 'limit', 'health','image']
 
 class StudentUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['name', 'grade', 'limit', 'health']
+        fields = ['name', 'grade', 'limit', 'health','image']
 
 class SchoolStudentListSerializer(serializers.ModelSerializer):
     students = StudentListSerializer(many=True)

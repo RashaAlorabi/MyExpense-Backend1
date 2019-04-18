@@ -93,14 +93,6 @@ class StudentListSerializer(serializers.ModelSerializer):
 #         model = School
 #         fields = ['parents']
         
-class SchoolDetailSerializer(serializers.ModelSerializer):
-    school_admin = UserSerializer()
-    # parents = ParentDetailSerializer(many=True)
-    students = StudentListSerializer(many=True)
-    class Meta:
-        model = School
-        fields = ['name', 'school_admin', 'students']
-
 # class ParentCreateSer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Parent
@@ -154,6 +146,13 @@ class SchoolItemListSerializer(serializers.ModelSerializer):
         model = School
         fields = ['items']
 
+class SchoolDetailSerializer(serializers.ModelSerializer):
+    school_admin = UserSerializer()
+    items = ItemSerializer(many=True)
+    students = StudentListSerializer(many=True)
+    class Meta:
+        model = School
+        fields = ['name', 'school_admin', 'students', 'items']
 
 class ItemCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:

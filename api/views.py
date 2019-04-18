@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-
+from rest_framework.parsers import FileUploadParser
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
@@ -15,14 +15,15 @@ from .serializers import (
 	UserUpdateSerializer,
 	UserSerializer,
     # ParentListSerializer,
-	ParentDetailSerializer,
-	ParentCreateUpdateSerializer,
+	# ParentDetailSerializer,
+	# ParentCreateUpdateSerializer,
     SchoolStudentListSerializer,
 	SchoolDetailSerializer,
 	StudentCreateSerializer, 
     StudentUpdateSerializer, 
 	StudentListSerializer,
 	ItemSerializer,
+    SchoolItemListSerializer,
 	ItemCreateUpdateSerializer,
 	CategorySerializer,
 )
@@ -68,29 +69,29 @@ class UserUpdateAPIView(RetrieveUpdateAPIView):
 # 		return Response(serializer.data, status=HTTP_200_OK)
 
 
-class ParentCreateAPIView(CreateAPIView):
-    serializer_class = ParentCreateUpdateSerializer
+# class ParentCreateAPIView(CreateAPIView):
+#     serializer_class = ParentCreateUpdateSerializer
 
-    def post(self, request, *args, **kwargs):
-        my_data = request.data
-        serializer = self.serializer_class(data=my_data)
-        if serializer.is_valid():
-            valid_data = serializer.data
-            new_data_user = {
-                'username': valid_data['parent']['username'],
-            }
-            user_parent = User.objects.create(**new_data_user)
-            user_parent.set_password(valid_data['parent']['password'])
-            user_parent.save()
-            parent_new_data = {
-                'parent' : User.objects.get(id=user_parent.id),
-            }
-            parent_obj = Parent.objects.create(**parent_new_data)
-            School_obj = School.objects.get(school_admin=request.user)
-            parent_obj.school.add(School_obj)
-            parent_obj.save()
-            return Response(valid_data, status=HTTP_200_OK)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+#     def post(self, request, *args, **kwargs):
+#         my_data = request.data
+#         serializer = self.serializer_class(data=my_data)
+#         if serializer.is_valid():
+#             valid_data = serializer.data
+#             new_data_user = {
+#                 'username': valid_data['parent']['username'],
+#             }
+#             user_parent = User.objects.create(**new_data_user)
+#             user_parent.set_password(valid_data['parent']['password'])
+#             user_parent.save()
+#             parent_new_data = {
+#                 'parent' : User.objects.get(id=user_parent.id),
+#             }
+#             parent_obj = Parent.objects.create(**parent_new_data)
+#             School_obj = School.objects.get(school_admin=request.user)
+#             parent_obj.school.add(School_obj)
+#             parent_obj.save()
+#             return Response(valid_data, status=HTTP_200_OK)
+#         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 # class ParentListAPIView(APIView):
@@ -154,9 +155,12 @@ class StudentCreateView(CreateAPIView):
     
     def post(self, request, *args, **kwargs):
         my_data = request.data
+        print("my_data ==> ", my_data)
         serializer = self.serializer_class(data=my_data)
         if serializer.is_valid():
+            print("serializer ==> ", serializer)
             valid_data = serializer.data
+            print("valid_data ==>  ", valid_data)
             user_obj , created = User.objects.get_or_create(username = "par"+str(valid_data['parent_id']), email=valid_data['email'])
             if created:
                 password = get_random_string()
@@ -180,6 +184,7 @@ class StudentCreateView(CreateAPIView):
                  'name': valid_data['name'],
                  'grade': valid_data['grade'],
                  'health': valid_data['health'],
+                 'image' :  my_data['image'],
                  'school': School.objects.get(school_admin=request.user),
                 }
             student = Student.objects.create(**new_student)
@@ -209,12 +214,41 @@ class CategoryListView(ListAPIView):
 
 
 class ItemAPIView(ListAPIView):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
+    # queryset = Item.objects.all()
+    serializer_class = SchoolItemListSerializer
+
+    def get(self, request, format=None):
+        school = School.objects.get(school_admin= request.user)
+        serializer = self.serializer_class(school, context={'request': request})
+        return Response(serializer.data, status=HTTP_200_OK)
+
 
 
 class ItemCreateView(CreateAPIView):
     serializer_class = ItemCreateUpdateSerializer
+    # permission_classes = [IsAuthenticated, ]
+    parser_class = (FileUploadParser,)
+    def post(self, request, *args, **kwargs):
+        my_data = request.data
+        print("my_data ==> ", my_data)
+        serializer = self.serializer_class(data=my_data, )
+        if serializer.is_valid():
+            print("serializer ==> ", serializer)
+            valid_data = serializer.data
+            print("valid_data ==>  ", valid_data)
+            school_obj = School.objects.get(school_admin= request.user)
+            new_item = {
+                'name': valid_data['name'],
+                'price': valid_data['price'],
+                'description': valid_data['description'],
+                'stock': valid_data['stock'],
+                'image': my_data['image'],
+                'category': Category.objects.get(id=valid_data['category']),
+                'school': school_obj,
+            }
+            item = Item.objects.create(**new_item)
+            return Response(valid_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 class ItemUpdateView(RetrieveUpdateAPIView):
     queryset = Item.objects.all()

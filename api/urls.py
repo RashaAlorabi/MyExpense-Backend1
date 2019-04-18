@@ -16,6 +16,7 @@ from .views import (
     StudentDeleteView,
     CategoryListView,
     ItemAPIView,
+    ItemDetailView,
     ItemCreateView,
     ItemUpdateView,
     ItemDeleteView,
@@ -44,8 +45,9 @@ urlpatterns = [
     path('category/', CategoryListView.as_view(), name='category'),
 
     path('list/item/', ItemAPIView.as_view(), name='items'),
+    path('item/detail/<int:item_id>/', ItemDetailView.as_view(), name='item-detail'),
     path('create/item/', ItemCreateView.as_view(), name='create-item'),
-    path('update/item/<int:item_id>', ItemUpdateView.as_view(), name='update-item'),
-    path('delete/item/<int:item_id>', ItemDeleteView.as_view(), name='delete-item'),
+    path('update/item/<int:item_id>/', ItemUpdateView.as_view(), name='update-item'),
+    path('delete/item/<int:item_id>/', ItemDeleteView.as_view(), name='delete-item'),
 
  ]

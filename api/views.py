@@ -214,7 +214,7 @@ class CategoryListView(ListAPIView):
 
 
 class ItemAPIView(ListAPIView):
-    # queryset = Item.objects.all()
+    queryset = Item.objects.all()
     serializer_class = SchoolItemListSerializer
 
     def get(self, request, format=None):
@@ -222,6 +222,13 @@ class ItemAPIView(ListAPIView):
         serializer = self.serializer_class(school, context={'request': request})
         return Response(serializer.data, status=HTTP_200_OK)
 
+
+class ItemDetailView(RetrieveUpdateAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'item_id'
+    # permission_classes = [IsAuthenticated, ]
 
 
 class ItemCreateView(CreateAPIView):

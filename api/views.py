@@ -154,9 +154,12 @@ class StudentCreateView(CreateAPIView):
     
     def post(self, request, *args, **kwargs):
         my_data = request.data
+        print("my_data ==> ", my_data)
         serializer = self.serializer_class(data=my_data)
         if serializer.is_valid():
+            print("serializer ==> ", serializer)
             valid_data = serializer.data
+            print("valid_data ==>  ", valid_data)
             user_obj , created = User.objects.get_or_create(username = "par"+str(valid_data['parent_id']), email=valid_data['email'])
             if created:
                 password = get_random_string()
@@ -180,6 +183,7 @@ class StudentCreateView(CreateAPIView):
                  'name': valid_data['name'],
                  'grade': valid_data['grade'],
                  'health': valid_data['health'],
+                 'image' :  my_data['image'],
                  'school': School.objects.get(school_admin=request.user),
                 }
             student = Student.objects.create(**new_student)
@@ -225,7 +229,7 @@ class ItemCreateView(CreateAPIView):
     parser_class = (FileUploadParser,)
     def post(self, request, *args, **kwargs):
         my_data = request.data
-        # print("my_data ==> ", my_data['image'])
+        print("my_data ==> ", my_data)
         serializer = self.serializer_class(data=my_data, )
         if serializer.is_valid():
             print("serializer ==> ", serializer)

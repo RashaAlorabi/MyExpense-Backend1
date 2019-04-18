@@ -111,7 +111,7 @@ class StudentCreateUpdateSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
     class Meta:
         model = Student
-        fields = ['parent_id', 'email', 'name', 'grade', 'limit', 'health']
+        fields = ['parent_id', 'image' ,'email', 'name', 'grade', 'limit', 'health', 'image']
 
 class SchoolStudentListSerializer(serializers.ModelSerializer):
     students = StudentListSerializer(many=True)

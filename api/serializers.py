@@ -106,12 +106,17 @@ class ParentCreateSer(serializers.ModelSerializer):
         model = Parent
         fields = ['NationalـId']
         
-class StudentCreateUpdateSerializer(serializers.ModelSerializer):
+class StudentCreateSerializer(serializers.ModelSerializer):
     parent_id = serializers.IntegerField(min_value=1, max_value=999999999)
     email = serializers.EmailField()
     class Meta:
         model = Student
         fields = ['parent_id', 'email', 'name', 'grade', 'limit', 'health']
+
+class StudentUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['name', 'grade', 'limit', 'health']
 
 class SchoolStudentListSerializer(serializers.ModelSerializer):
     students = StudentListSerializer(many=True)

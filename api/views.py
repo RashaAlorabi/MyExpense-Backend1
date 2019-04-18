@@ -19,7 +19,8 @@ from .serializers import (
 	# ParentCreateUpdateSerializer,
     SchoolStudentListSerializer,
 	SchoolDetailSerializer,
-	StudentCreateUpdateSerializer, 
+	StudentCreateSerializer, 
+    StudentUpdateSerializer, 
 	StudentListSerializer,
 	ItemSerializer,
     SchoolItemListSerializer,
@@ -149,7 +150,7 @@ class StudentDetailView(RetrieveUpdateAPIView):
 
 # hear will change this list 
 class StudentCreateView(CreateAPIView):
-    serializer_class = StudentCreateUpdateSerializer
+    serializer_class = StudentCreateSerializer
     # permission_classes = [IsAuthenticated, ]
     
     def post(self, request, *args, **kwargs):
@@ -195,7 +196,7 @@ class StudentCreateView(CreateAPIView):
 
 class StudentUpdateView(RetrieveUpdateAPIView):
     queryset = Student.objects.all()
-    serializer_class = StudentCreateUpdateSerializer
+    serializer_class = StudentUpdateSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'student_id' 
     # permission_classes = [IsAuthenticated, ]

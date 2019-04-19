@@ -21,10 +21,16 @@ class Parent(models.Model):
     def __str__(self):
         return self.user.username
 
-
+Garad=[('Grade 1','Grade 1'),
+         ('Grade 2','Grade 2'),
+         ('Grade 3','Grade 3'),
+         ('Grade 4','Grade 4'),
+         ('Grade 5','Grade 5'),
+         ('Grade 6','Grade 6'),
+        ]
 class Student(models.Model):
     name = models.CharField(max_length=50)
-    grade = models.CharField(max_length=50)
+    grade = models.CharField(choices=Garad, default=1, max_length=10)
     parent = models.ForeignKey(Parent, on_delete = models.CASCADE, related_name='child')
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='students')
     limit = models.PositiveIntegerField(validators=[MinValueValidator(1)] , default=1)

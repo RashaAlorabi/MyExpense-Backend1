@@ -43,7 +43,7 @@ class Student(models.Model):
   
 class Category(models.Model):
     name = models.CharField(max_length=20)
-
+    
     def __str__(self):
         return self.name
 
@@ -67,28 +67,30 @@ class Order(models.Model):
     paid = models.BooleanField(default=False) 
     order_date = models.DateTimeField(null=True)
 
-    def get_total(self):
-        total = 0
-        if self.cart_items.all():
-            for item in self.cart_items.all():
-                total += item.subtotal
-        return total
+    def sum_total(self):
+        all_item = self.cart_items.all()
+        self.total = sum([item_obj.quantity * item_obj.item.price for item_obj in all_item])
+        self.save()
+
+    def checkout(self):
+        if self.paid:
+            self.student.parent.wallet -= self.total
+            self.student.parent.save()
 
 
 class CartItem(models.Model):
-    item = models.ForeignKey(Item, null=True, on_delete=models.CASCADE, related_name='cart_items')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
-    subtotal = models.DecimalField(default=0.00,max_digits=10, null=True, decimal_places=2)
+    # subtotal = models.DecimalField(default=0.00,max_digits=10, null=True, decimal_places=2)
     order = models.ForeignKey(Order, null=True, on_delete=models.CASCADE, related_name='cart_items')
 
  
   
-@receiver(pre_save, sender = CartItem)
-def get_subtotal(instance, *args, **kwargs):
-    instance.subtotal = Decimal(instance.item.price)*Decimal(instance.quantity)
-    instance.item.save()
+@receiver(post_delete, sender=CartItem)
+@receiver(post_save, sender=CartItem)
+def get_total(instance, *args, **kwargs):
+    instance.order.sum_total()
 
-@receiver(pre_delete, sender = CartItem)
-def change_stock(instance, *args, **kwargs):
-    instance.item.stock = int(instance.item.stock) + int(instance.quantity)
-    instance.item.save()
+@receiver(post_save, sender=Order)
+def checkout(instance, *args, **kwargs):
+    instance.checkout()

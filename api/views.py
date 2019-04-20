@@ -26,6 +26,7 @@ from .serializers import (
     SchoolItemListSerializer,
 	ItemCreateUpdateSerializer,
 	CategorySerializer,
+    SchoolCategoriesSerializer,
 )
 
 from django.core.mail import send_mail
@@ -210,8 +211,12 @@ class StudentDeleteView(DestroyAPIView):
 
 class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = SchoolCategoriesSerializer
 
+    def get(self, request, format=None):
+        school = School.objects.get(school_admin= request.user)
+        serializer = self.serializer_class(school, context={'request': request})
+        return Response(serializer.data, status=HTTP_200_OK)
 
 class ItemAPIView(ListAPIView):
     queryset = Item.objects.all()

@@ -124,6 +124,12 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SchoolCategoriesSerializer(serializers.ModelSerializer):
+    schoolcategories = CategorySerializer(many=True)
+    class Meta:
+        model = School
+        fields = ['schoolcategories']
+
 class ItemSerializer(serializers.ModelSerializer):
     category= CategorySerializer()
     class Meta:
@@ -142,6 +148,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
 class SchoolItemListSerializer(serializers.ModelSerializer):
     items = ItemSerializer(many=True)
+   
     class Meta:
         model = School
         fields = ['items']

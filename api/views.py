@@ -27,6 +27,7 @@ from .serializers import (
     SchoolItemListSerializer,
 	ItemCreateUpdateSerializer,
 	CategorySerializer,
+    SchoolCategoriesSerializer,
 )
 
 from django.core.mail import send_mail
@@ -211,9 +212,12 @@ class StudentDeleteView(DestroyAPIView):
 
 class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    
+    serializer_class = SchoolCategoriesSerializer
 
+    def get(self, request, format=None):
+        school = School.objects.get(school_admin= request.user)
+        serializer = self.serializer_class(school, context={'request': request})
+        return Response(serializer.data, status=HTTP_200_OK)
 
 class ItemAPIView(ListAPIView):
     queryset = Item.objects.all()
@@ -262,8 +266,31 @@ class ItemCreateView(CreateAPIView):
 class ItemUpdateView(RetrieveUpdateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemCreateUpdateSerializer
-    lookup_field = 'id'
-    lookup_url_kwarg = 'item_id'
+    
+
+    def put(self, request, *args, **kwargs):
+        item_id = kwargs
+        my_data = request.data
+       
+        serializer = self.serializer_class(data=my_data, )
+        if serializer.is_valid():
+
+            Item_obj = Item.objects.get(id= item_id["item_id"])
+            valid_data = serializer.data
+            school_obj = School.objects.get(school_admin= request.user)
+            
+            Item_obj.name = valid_data['name']
+            Item_obj.price = valid_data['price']
+            Item_obj.description = valid_data['description']
+            Item_obj.stock = valid_data['stock']
+            Item_obj.image = my_data['image']
+            Item_obj.category = Category.objects.get(id=valid_data['category'])
+            Item_obj.school = school_obj
+
+            Item_obj.save()
+            return Response(valid_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
 
     
 class ItemDeleteView(DestroyAPIView):

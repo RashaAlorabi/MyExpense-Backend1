@@ -5,6 +5,8 @@ from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
+
+        
 class School(models.Model):
     name = models.CharField(max_length=50)
     school_admin = models.OneToOneField(User, on_delete=models.CASCADE,)
@@ -40,13 +42,13 @@ class Student(models.Model):
     def __str__(self):
         return self.name	
 
-  
+        
 class Category(models.Model):
     name = models.CharField(max_length=20)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="schoolcategories")
 
     def __str__(self):
         return self.name
-
 
 class Item(models.Model):
     name = models.CharField(max_length=50)

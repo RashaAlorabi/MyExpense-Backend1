@@ -17,6 +17,7 @@ from .serializers import (
     # ParentListSerializer,
 	# ParentDetailSerializer,
 	# ParentCreateUpdateSerializer,
+    CartItemCreateUpdateSerializer,
     SchoolStudentListSerializer,
 	SchoolDetailSerializer,
 	StudentCreateSerializer, 
@@ -297,3 +298,33 @@ class ItemDeleteView(DestroyAPIView):
     serializer_class = ItemSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'item_id'
+
+
+class CartItemCreateView(CreateAPIView):
+    serializer_class = CartItemCreateUpdateSerializer
+    
+    def post(self, request, *args, **kwargs):
+        my_data = request.data
+        id_order = kwargs
+        serializer = self.serializer_class(data=my_data)
+        if serializer.is_valid():
+            valid_data = serializer.data
+            new_data = {
+                'item': Item.objects.get(id=valid_data['item']),
+                'order': Order.objects.get(id=id_order['Order_id']),
+            }
+            cartItem, created = CartItem.objects.get_or_create(**new_data)
+            if created:
+                cartItem.quantity = valid_data['quantity']
+                cartItem.save()
+                cartItem.item.stock -= cartItem.quantity
+                cartItem.item.save()
+                return Response(valid_data, status=HTTP_200_OK)
+            else:
+                cartItem.item.stock +=  cartItem.quantity
+                cartItem.quantity += valid_data['quantity']
+                cartItem.save()
+                cartItem.item.stock -= cartItem.quantity
+                cartItem.item.save()
+                return Response(valid_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

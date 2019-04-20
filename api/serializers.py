@@ -166,3 +166,11 @@ class ItemCreateUpdateSerializer(serializers.ModelSerializer):
         model = Item
         fields = ['name', 'price', 'description', 'stock', 'image', 'category',]
 
+class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = [
+            'id',
+            'item',
+            'quantity',
+        ]

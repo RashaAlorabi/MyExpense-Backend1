@@ -68,6 +68,15 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8000',
 )
 
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+)
+
 CORS_ALLOW_HEADERS = (
     'accept',
     'accept-encoding',

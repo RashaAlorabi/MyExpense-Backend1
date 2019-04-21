@@ -166,7 +166,7 @@ class StudentCreateView(APIView):
                 password = get_random_string()
                 user_obj.set_password(password)
                 user_obj.save()
-                parent_obj = Parent.objects.create(user=user_obj)
+                parent_obj = Parent.objects.create(**{'user':user_obj})
                 subject = "معلومات الدخول إلى نظام مصروفي"
                 message = " "+password+" كلمة المرور \n "+user_obj.username+" اسم المستخدم"
 

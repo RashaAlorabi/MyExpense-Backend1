@@ -131,14 +131,12 @@ class StudentListView(ListAPIView):
     serializer_class = StudentListSerializer
 
 
-class SchoolStudentListView(APIView):
-    serializer_class = SchoolStudentListSerializer
+class SchoolStudentListView(ListAPIView):
+    serializer_class = StudentListSerializer
     permission_classes = [IsAuthenticated]
     
-    def get(self, request, format=None):
-        school = School.objects.get(school_admin= request.user)
-        serializer = self.serializer_class(school, context={'request': request})
-        return Response(serializer.data, status=HTTP_200_OK)
+    def get_queryset(self):
+        return self.request.user.school.students.all()
 
 class StudentDetailView(RetrieveUpdateAPIView):
     queryset = Student.objects.all()
@@ -151,7 +149,7 @@ class StudentDetailView(RetrieveUpdateAPIView):
 
 
 # hear will change this list 
-class StudentCreateView(CreateAPIView):
+class StudentCreateView(APIView):
     serializer_class = StudentCreateSerializer
     # permission_classes = [IsAuthenticated, ]
     
@@ -168,9 +166,7 @@ class StudentCreateView(CreateAPIView):
                 password = get_random_string()
                 user_obj.set_password(password)
                 user_obj.save()
-                parent_obj = Parent.objects.create(**{
-                    'user' : user_obj
-                })
+                parent_obj = Parent.objects.create(user=user_obj)
                 subject = "معلومات الدخول إلى نظام مصروفي"
                 message = " "+password+" كلمة المرور \n "+user_obj.username+" اسم المستخدم"
 
@@ -211,22 +207,17 @@ class StudentDeleteView(DestroyAPIView):
 
 
 class CategoryListView(ListAPIView):
-    queryset = Category.objects.all()
-    serializer_class = SchoolCategoriesSerializer
+    serializer_class = CategorySerializer
 
-    def get(self, request, format=None):
-        school = School.objects.get(school_admin= request.user)
-        serializer = self.serializer_class(school, context={'request': request})
-        return Response(serializer.data, status=HTTP_200_OK)
+    def get_queryset(self):
+        return self.request.user.school.schoolcategories.all()
+    
 
 class ItemAPIView(ListAPIView):
-    queryset = Item.objects.all()
-    serializer_class = SchoolItemListSerializer
+    serializer_class = ItemSerializer
 
-    def get(self, request, format=None):
-        school = School.objects.get(school_admin= request.user)
-        serializer = self.serializer_class(school, context={'request': request})
-        return Response(serializer.data, status=HTTP_200_OK)
+    def get_queryset(self):
+        return self.request.user.school.items.all()
 
 
 class ItemDetailView(RetrieveUpdateAPIView):

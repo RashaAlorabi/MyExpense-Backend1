@@ -36,13 +36,13 @@ urlpatterns = [
     # path('parent/list/', ParentListAPIView.as_view(), name='parent-list'),
 
     path('student/add/', StudentCreateView.as_view(), name='student-add'),
-    path('students/list/', StudentListView.as_view(), name='students-list'),
+    # path('students/list/', StudentListView.as_view(), name='students-list'),
     
     path('student/<int:student_id>/detail/', StudentDetailView.as_view(), name='students-detail'),
     path('student/<int:student_id>/update/', StudentUpdateView.as_view(), name='student-update'),
     path('student/<int:student_id>/delete/', StudentDeleteView.as_view(), name='student-delete'),
    
-   # path('school/students/', SchoolStudentListView.as_view(), name='students-list'),
+    path('school/students/', SchoolStudentListView.as_view(), name='students-list'),
     path('category/', CategoryListView.as_view(), name='category'),
 
     path('list/item/', ItemAPIView.as_view(), name='items'),

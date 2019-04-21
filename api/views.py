@@ -11,23 +11,24 @@ from rest_framework.generics import (
 from django.utils.crypto import get_random_string
 
 from .serializers import (
-	UserCreateSerializer,
-	UserUpdateSerializer,
-	UserSerializer,
+    UserCreateSerializer,
+    UserUpdateSerializer,
+    UserSerializer,
     # ParentListSerializer,
-	# ParentDetailSerializer,
-	# ParentCreateUpdateSerializer,
+    # ParentDetailSerializer,
+    # ParentCreateUpdateSerializer,
     CartItemCreateUpdateSerializer,
     SchoolStudentListSerializer,
-	SchoolDetailSerializer,
-	StudentCreateSerializer, 
+    SchoolDetailSerializer,
+    StudentCreateSerializer, 
     StudentUpdateSerializer, 
-	StudentListSerializer,
-	ItemSerializer,
+    StudentListSerializer,
+    ItemSerializer,
     SchoolItemListSerializer,
-	ItemCreateUpdateSerializer,
-	CategorySerializer,
+    ItemCreateUpdateSerializer,
+    CategorySerializer,
     SchoolCategoriesSerializer,
+    OrderSerializer,
 )
 
 from django.core.mail import send_mail
@@ -319,3 +320,19 @@ class CartItemCreateView(CreateAPIView):
                 cartItem.item.save()
                 return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+
+class OrderCreateView(CreateAPIView):
+    serializer_class = OrderSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(student=Student.objects.get(id=self.kwargs['student_id']))
+
+class CheckoutView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        order= Order.objects.get(id=self.kwargs['Order_id'])
+        order.paid = True
+        order.save()
+        return order
+            

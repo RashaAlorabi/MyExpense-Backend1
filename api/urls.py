@@ -22,6 +22,8 @@ from .views import (
     ItemDeleteView,
     # ParentDeleteView,
     CartItemCreateView,
+    OrderCreateView,
+    CheckoutView,
 )
 
 urlpatterns = [
@@ -51,5 +53,7 @@ urlpatterns = [
     path('update/item/<int:item_id>/', ItemUpdateView.as_view(), name='update-item'),
     path('delete/item/<int:item_id>/', ItemDeleteView.as_view(), name='delete-item'),
 
-    path('cartItem/<int:Order_id>/create/', CartItemCreateView.as_view(), name='cart-item-create')
+    path('create/<int:student_id>/order/', OrderCreateView.as_view(), name='create-order'),
+    path('cartItem/<int:Order_id>/create/', CartItemCreateView.as_view(), name='cart-item-create'),
+    path('checkout/<int:Order_id>/', CheckoutView.as_view(), name='checkout')
  ]

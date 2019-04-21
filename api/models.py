@@ -67,7 +67,7 @@ class Order(models.Model):
     total = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='orders')
     paid = models.BooleanField(default=False) 
-    order_date = models.DateTimeField(null=True)
+    order_date = models.DateTimeField(auto_now_add=True)
 
     def sum_total(self):
         all_item = self.cart_items.all()

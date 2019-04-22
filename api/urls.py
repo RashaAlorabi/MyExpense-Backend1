@@ -23,6 +23,7 @@ from .views import (
     CartItemCreateView,
     OrderCreateView,
     CheckoutView,
+    RetrieveOrder
 )
 
 urlpatterns = [
@@ -52,5 +53,6 @@ urlpatterns = [
 
     path('create/<int:student_id>/order/', OrderCreateView.as_view(), name='create-order'),
     path('cartItem/<int:Order_id>/create/', CartItemCreateView.as_view(), name='cart-item-create'),
-    path('checkout/<int:Order_id>/', CheckoutView.as_view(), name='checkout')
+    path('checkout/<int:Order_id>/', CheckoutView.as_view(), name='checkout'),
+    path('order/<int:order_id>/', RetrieveOrder.as_view(), name='retrieve-order')
  ]

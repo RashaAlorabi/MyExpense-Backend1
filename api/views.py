@@ -32,6 +32,7 @@ from .serializers import (
     StudentParentSerializer1,
     UpdateWalletSerializer,
     OrderSerializer,
+    RetrieveOrderSerializer,
 
 )
 
@@ -337,4 +338,11 @@ class CheckoutView(APIView):
         order.paid = True
         order.save()
         return order
+
+class RetrieveOrder(RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = RetrieveOrderSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'order_id'
+
             

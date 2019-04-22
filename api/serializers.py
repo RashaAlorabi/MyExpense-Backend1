@@ -158,3 +158,8 @@ class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
             'item',
             'quantity',
         ]
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        exclude = ['student']

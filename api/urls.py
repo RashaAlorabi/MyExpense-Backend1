@@ -4,45 +4,42 @@ from rest_framework_jwt.views import obtain_jwt_token
 from .views import (
     UserCreateAPIView,
     UserUpdateAPIView,
-    # ParentAPIView,
-    # ParentListAPIView,
-    # ParentCreateAPIView,
     SchoolAPIView,
-    StudentListView,
+    ParentView,
+    ParentStudentsView,
+    ParentWalletView,
     SchoolStudentListView,
     StudentDetailView,
     StudentCreateView,
     StudentUpdateView,
     StudentDeleteView,
+    StudentLimitView,
     CategoryListView,
     ItemAPIView,
     ItemDetailView,
     ItemCreateView,
     ItemUpdateView,
     ItemDeleteView,
-    # ParentDeleteView,
     CartItemCreateView,
 )
 
 urlpatterns = [
 
     path('school/login/', obtain_jwt_token, name='admin-login'),
-    # path('school/register/parent/', UserCreateAPIView.as_view(), name='register-parent'),
     path('school/profile/', SchoolAPIView.as_view(), name='school-profile'),
-    # path('parent/account/', ParentCreateAPIView.as_view(), name='parent-account'),
-    # path('parent/<int:parent_id>/delete/', ParentDeleteView.as_view(), name='parent-delete'),
-    # path('profile/parent/', ParentAPIView.as_view(), name='profile-parent'),
-
-    # path('parent/list/', ParentListAPIView.as_view(), name='parent-list'),
-
-    path('student/add/', StudentCreateView.as_view(), name='student-add'),
-    # path('students/list/', StudentListView.as_view(), name='students-list'),
     
+    path('parent/profile/', ParentView.as_view(), name='parent-profile'),
+    path('parent/students/', ParentStudentsView.as_view(), name='parent-students'),
+    path('parent/wallet/',ParentWalletView.as_view(), name='parent-wallet'),
+   
+    path('school/students/', SchoolStudentListView.as_view(), name='students-list'),
+    path('student/add/', StudentCreateView.as_view(), name='student-add'),
     path('student/<int:student_id>/detail/', StudentDetailView.as_view(), name='students-detail'),
     path('student/<int:student_id>/update/', StudentUpdateView.as_view(), name='student-update'),
     path('student/<int:student_id>/delete/', StudentDeleteView.as_view(), name='student-delete'),
+    path('student/<int:student_id>/limit/', StudentLimitView.as_view(), name='student-limit'),
    
-    path('school/students/', SchoolStudentListView.as_view(), name='students-list'),
+    
     path('category/', CategoryListView.as_view(), name='category'),
 
     path('list/item/', ItemAPIView.as_view(), name='items'),

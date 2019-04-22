@@ -14,20 +14,21 @@ from .serializers import (
 	UserCreateSerializer,
 	UserUpdateSerializer,
 	UserSerializer,
-    # ParentListSerializer,
-	# ParentDetailSerializer,
-	# ParentCreateUpdateSerializer,
     CartItemCreateUpdateSerializer,
     SchoolStudentListSerializer,
 	SchoolDetailSerializer,
+    ParentDetailSerializer,
 	StudentCreateSerializer, 
     StudentUpdateSerializer, 
 	StudentListSerializer,
+    UpdatelimitSerializer,
 	ItemSerializer,
     SchoolItemListSerializer,
 	ItemCreateUpdateSerializer,
 	CategorySerializer,
     SchoolCategoriesSerializer,
+    StudentParentSerializer1,
+    UpdateWalletSerializer,
 )
 
 from django.core.mail import send_mail
@@ -42,7 +43,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 from api.models import School, Parent, Student, Category, Item, Order, CartItem
 from django.contrib.auth.models import User
-from .permissions import IsSchoolAdmin, IsPrincipalDe
+from .permissions import IsSchoolAdmin, IsParent
 
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
@@ -61,74 +62,74 @@ class UserUpdateAPIView(RetrieveUpdateAPIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-# class ParentAPIView(RetrieveAPIView):
-# 	serializer_class = ParentDetailSerializer
-# 	def get(self, request, format=None):
-# 		profile = Profile.objects.get(parent=request.user)
-# 		serializer = ProfileDetailSerializer(profile, context={'request': request})
-# 		if request.user.is_anonymous:
-# 			return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-# 		return Response(serializer.data, status=HTTP_200_OK)
-
-
-# class ParentCreateAPIView(CreateAPIView):
-#     serializer_class = ParentCreateUpdateSerializer
-
-#     def post(self, request, *args, **kwargs):
-#         my_data = request.data
-#         serializer = self.serializer_class(data=my_data)
-#         if serializer.is_valid():
-#             valid_data = serializer.data
-#             new_data_user = {
-#                 'username': valid_data['parent']['username'],
-#             }
-#             user_parent = User.objects.create(**new_data_user)
-#             user_parent.set_password(valid_data['parent']['password'])
-#             user_parent.save()
-#             parent_new_data = {
-#                 'parent' : User.objects.get(id=user_parent.id),
-#             }
-#             parent_obj = Parent.objects.create(**parent_new_data)
-#             School_obj = School.objects.get(school_admin=request.user)
-#             parent_obj.school.add(School_obj)
-#             parent_obj.save()
-#             return Response(valid_data, status=HTTP_200_OK)
-#         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-
-
-# class ParentListAPIView(APIView):
-#     serializer_class = ParentListSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request, format=None):
-#         school = School.objects.get(school_admin= request.user)
-#         serializer = self.serializer_class(school, context={'request': request})
-#         return Response(serializer.data, status=HTTP_200_OK)
-    
-
-# class ParentDeleteView(DestroyAPIView):
-#     queryset = Parent.objects.all()
-#     lookup_field = 'id'
-#     lookup_url_kwarg = 'parent_id'
-#     # permission_classes = [IsPrincipalDe]
-
-
 class SchoolAPIView(APIView):
     serializer_class = SchoolDetailSerializer
     permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request, format=None):
-        # try:
-        school = School.objects.get(school_admin=request.user)
-        serializer = self.serializer_class(school, context={'request': request})
-        return Response(serializer.data, status=HTTP_200_OK)
-        # except:
-        #     return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
+        try:
+            school = School.objects.get(school_admin=request.user)
+            serializer = self.serializer_class(school, context={'request': request})
+            return Response(serializer.data, status=HTTP_200_OK)
+        except:
+            return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
 
+class ParentView(APIView):
+    serializer_class = ParentDetailSerializer
+    permission_classes = [IsParent]
 
-class StudentListView(ListAPIView):
-    queryset = Student.objects.all()
+    def get(self, request, format=None):
+        try:
+            parent = Parent.objects.get(user=request.user)
+            serializer = self.serializer_class(parent, context={'request': request})
+            return Response(serializer.data, status=HTTP_200_OK)
+        except:
+            return Response({"message": "you are not a parent "}, status=HTTP_400_BAD_REQUEST)
+
+class ParentStudentsView(ListAPIView):
     serializer_class = StudentListSerializer
+    permission_classes = [IsParent]
+    
+    def get_queryset(self):
+        return self.request.user.parent.child.all()
+
+class ParentWalletView(RetrieveUpdateAPIView):
+    serializer_class = UpdateWalletSerializer
+    permission_classes = [IsParent]
+    
+    def put(self, request, *args, **kwargs):
+        parent_id = kwargs
+        my_data = request.data
+       
+        serializer = self.serializer_class(data=my_data, )
+        if serializer.is_valid():
+
+            parent_obj = Parent.objects.get(user= request.user)
+            valid_data = serializer.data
+            print("valid_data ==> ", valid_data)
+            parent_obj.wallet = valid_data['wallet']
+            parent_obj.save()
+            return Response(valid_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+class StudentLimitView(RetrieveUpdateAPIView):
+    serializer_class = UpdatelimitSerializer
+    permission_classes = [IsParent]
+    
+    def put(self, request, *args, **kwargs):
+        student_id = kwargs
+        my_data = request.data
+       
+        serializer = self.serializer_class(data=my_data, )
+        if serializer.is_valid():
+            student_obj = Student.objects.get(id= student_id["student_id"])
+            parent_obj = Parent.objects.get(user= request.user)
+            valid_data = serializer.data
+            student_obj.limit = valid_data['limit']
+            student_obj.save()
+            parent_obj.save()
+            return Response(valid_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class SchoolStudentListView(ListAPIView):
@@ -143,7 +144,7 @@ class StudentDetailView(RetrieveUpdateAPIView):
     serializer_class = StudentListSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'student_id'
-    # permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, ]
 
 
 
@@ -197,13 +198,13 @@ class StudentUpdateView(RetrieveUpdateAPIView):
     serializer_class = StudentUpdateSerializer
     lookup_field = 'id'
     lookup_url_kwarg = 'student_id' 
-    # permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, ]
 
 class StudentDeleteView(DestroyAPIView):
     queryset = Student.objects.all()
     lookup_field = 'id'
     lookup_url_kwarg = 'student_id'
-    # permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, ]
 
 
 class CategoryListView(ListAPIView):
@@ -281,8 +282,6 @@ class ItemUpdateView(RetrieveUpdateAPIView):
             Item_obj.save()
             return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-
-
     
 class ItemDeleteView(DestroyAPIView):
     queryset = Item.objects.all()

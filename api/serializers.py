@@ -43,27 +43,12 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name', 
             'email',           
         ]
-# class ParentCreateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = [
-#             'id',
-#             'username',
-#             'password',         
-#         ]
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
-
-
-# class ParentCreateUpdateSerializer(serializers.ModelSerializer):
-#     parent = ParentCreateSerializer()
-#     class Meta:
-#         model = Parent
-#         fields = ['parent']
 
 
 class StudentParentSerializer1(serializers.ModelSerializer):
@@ -80,24 +65,23 @@ class StudentListSerializer(serializers.ModelSerializer):
         fields = ['id','name', 'grade', 'limit', 'health','parent','image']
 
 
-# class ParentDetailSerializer(serializers.ModelSerializer):
-#     parent = UserSerializer()
-#     # child = StudentListSerializer(many=True)
-#     class Meta:
-#         model = Parent
-#         fields = ['id','parent','image', 'wallet']
+class ParentDetailSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    child = StudentListSerializer(many=True)
+    class Meta:
+        model = Parent
+        fields = ['user', 'child', 'wallet', 'image']
 
-# class ParentListSerializer(serializers.ModelSerializer):
-#     # parents = ParentDetailSerializer(many=True)
-#     class Meta:
-#         model = School
-#         fields = ['parents']
-        
-# class ParentCreateSer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Parent
-#         fields = ['NationalـId']
-        
+class UpdateWalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Parent
+        fields = ['wallet']
+
+class UpdatelimitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['limit']
+
 class StudentCreateSerializer(serializers.ModelSerializer):
     parent_id = serializers.IntegerField(min_value=1, max_value=999999999)
     email = serializers.EmailField()

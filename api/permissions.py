@@ -10,10 +10,12 @@ class IsSchoolAdmin(BasePermission):
             return True
         return False
 
-class IsPrincipalDe(BasePermission):
-    message = "You are not the principal of this School."
+class IsParent(BasePermission):
+    message = "You are not a parent."
 
     def has_object_permission(self, request, view, obj):
-        if obj.school.school_admin == request.user:
+        if obj.parent.user == request.user:
             return True
         return False
+
+     

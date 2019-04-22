@@ -167,6 +167,7 @@ class ItemCreateUpdateSerializer(serializers.ModelSerializer):
         fields = ['name', 'price', 'description', 'stock', 'image', 'category',]
 
 class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
+    item = ItemSerializer()
     class Meta:
         model = CartItem
         fields = [
@@ -179,3 +180,11 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         exclude = ['student']
+
+
+class RetrieveOrderSerializer(serializers.ModelSerializer):
+    cart_items = CartItemCreateUpdateSerializer(many=True)
+    class Meta:
+        model = Order
+        fields = ['total', 'paid', 'order_date', 'cart_items']
+    

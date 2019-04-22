@@ -29,6 +29,7 @@ from .serializers import (
     CategorySerializer,
     SchoolCategoriesSerializer,
     OrderSerializer,
+    RetrieveOrderSerializer,
 )
 
 from django.core.mail import send_mail
@@ -335,4 +336,11 @@ class CheckoutView(APIView):
         order.paid = True
         order.save()
         return order
+
+class RetrieveOrder(RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = RetrieveOrderSerializer
+    lookup_field = 'id'
+    lookup_url_kwarg = 'order_id'
+
             

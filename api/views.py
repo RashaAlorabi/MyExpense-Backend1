@@ -24,7 +24,6 @@ from .serializers import (
 	StudentListSerializer,
     UpdatelimitSerializer,
 	ItemSerializer,
-
     SchoolItemListSerializer,
     ItemCreateUpdateSerializer,
     CategorySerializer,

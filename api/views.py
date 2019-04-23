@@ -11,22 +11,22 @@ from rest_framework.generics import (
 from django.utils.crypto import get_random_string
 
 from .serializers import (
-	UserCreateSerializer,
-	UserUpdateSerializer,
-	UserSerializer,
+    UserCreateSerializer,
+    UserUpdateSerializer,
+    UserSerializer,
     # ParentListSerializer,
-	# ParentDetailSerializer,
-	# ParentCreateUpdateSerializer,
+    # ParentDetailSerializer,
+    # ParentCreateUpdateSerializer,
     CartItemCreateUpdateSerializer,
     SchoolStudentListSerializer,
-	SchoolDetailSerializer,
-	StudentCreateSerializer, 
+    SchoolDetailSerializer,
+    StudentCreateSerializer, 
     StudentUpdateSerializer, 
-	StudentListSerializer,
-	ItemSerializer,
+    StudentListSerializer,
+    ItemSerializer,
     SchoolItemListSerializer,
-	ItemCreateUpdateSerializer,
-	CategorySerializer,
+    ItemCreateUpdateSerializer,
+    CategorySerializer,
     SchoolCategoriesSerializer,
 )
 
@@ -118,12 +118,12 @@ class SchoolAPIView(APIView):
     permission_classes = [IsAuthenticated, IsSchoolAdmin]
 
     def get(self, request, format=None):
-        # try:
-        school = School.objects.get(school_admin=request.user)
-        serializer = self.serializer_class(school, context={'request': request})
-        return Response(serializer.data, status=HTTP_200_OK)
-        # except:
-        #     return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
+        try:
+            school = School.objects.get(school_admin=request.user)
+            serializer = self.serializer_class(school, context={'request': request})
+            return Response(serializer.data, status=HTTP_200_OK)
+        except:
+            return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
 
 
 class StudentListView(ListAPIView):

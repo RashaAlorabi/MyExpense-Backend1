@@ -359,7 +359,7 @@ class CheckoutView(APIView):
         order= Order.objects.get(id=self.kwargs['Order_id'])
         order.paid = True
         order.save()
-        return order
+        return Response(order.paid)
 
 class RetrieveOrder(RetrieveAPIView):
     queryset = Order.objects.all()

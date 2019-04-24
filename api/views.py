@@ -32,6 +32,7 @@ from .serializers import (
     UpdateWalletSerializer,
     OrderSerializer,
     RetrieveOrderSerializer,
+    parentItemSerializer
 
 )
 
@@ -113,6 +114,25 @@ class ParentWalletView(RetrieveUpdateAPIView):
             print("valid_data ==> ", valid_data)
             parent_obj.wallet = valid_data['wallet']
             parent_obj.save()
+            return Response(valid_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+class StudentXItemsView(RetrieveUpdateAPIView):
+    serializer_class = parentItemSerializer
+    # permission_classes = [IsParent]
+    
+    def put(self, request, *args, **kwargs):
+        student_id = kwargs
+        my_data = request.data
+        print("my_data ===> ", my_data)
+        serializer = self.serializer_class(data=my_data, )
+        print("serializer ===> ", serializer)
+        if serializer.is_valid():
+            student_obj = Student.objects.get(id= student_id["student_id"])
+            parent_obj = Parent.objects.get(user= request.user)
+            valid_data = serializer.data
+            student_obj.x_item.set(valid_data['x_items']) 
+            student_obj.save()
             return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 

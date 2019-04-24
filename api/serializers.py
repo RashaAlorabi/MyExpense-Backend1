@@ -151,6 +151,15 @@ class ItemCreateUpdateSerializer(serializers.ModelSerializer):
         fields = ['name', 'price', 'description', 'stock', 'image', 'category',]
 
 class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
+    # item = ItemSerializer()
+    class Meta:
+        model = CartItem
+        fields = [
+            'id',
+            'item',
+            'quantity',
+        ]
+class CartItemListSerializer(serializers.ModelSerializer):
     item = ItemSerializer()
     class Meta:
         model = CartItem
@@ -159,7 +168,6 @@ class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
             'item',
             'quantity',
         ]
-
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
@@ -167,8 +175,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class RetrieveOrderSerializer(serializers.ModelSerializer):
-    cart_items = CartItemCreateUpdateSerializer(many=True)
+    cart_items = CartItemListSerializer(many=True)
     class Meta:
         model = Order
-        fields = ['total', 'paid', 'order_date', 'cart_items']
+        fields = ['id','total', 'paid', 'order_date', 'cart_items']
     

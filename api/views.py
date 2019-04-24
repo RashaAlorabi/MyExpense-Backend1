@@ -11,7 +11,7 @@ from rest_framework.generics import (
 from django.utils.crypto import get_random_string
 
 from .serializers import (
-
+    StudentDetailSerializer,
 	UserCreateSerializer,
 	UserUpdateSerializer,
 	UserSerializer,
@@ -91,7 +91,7 @@ class ParentView(APIView):
             return Response({"message": "you are not a parent "}, status=HTTP_400_BAD_REQUEST)
 
 class ParentStudentsView(ListAPIView):
-    serializer_class = StudentListSerializer
+    serializer_class = StudentDetailSerializer
     permission_classes = [IsParent]
     
     def get_queryset(self):

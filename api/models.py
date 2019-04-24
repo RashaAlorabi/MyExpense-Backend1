@@ -41,12 +41,12 @@ class Parent(models.Model):
     def __str__(self):
         return self.user.username
 
-Garad=[('Grade 1','Grade 1'),
-         ('Grade 2','Grade 2'),
-         ('Grade 3','Grade 3'),
-         ('Grade 4','Grade 4'),
-         ('Grade 5','Grade 5'),
-         ('Grade 6','Grade 6'),
+Garad=[('الصف الاول','الصف الاول'),
+         ('الصف الثاني','الصف الثاني'),
+         ('الصف الثالث','الصف الثالث'),
+         ('الصف الرابع','الصف الرابع'),
+         ('الصف الخامس','الصف الخامس'),
+         ('الصف السادس','الصف السادس'),
         ]
 
 class Student(models.Model):
@@ -57,7 +57,7 @@ class Student(models.Model):
     limit = models.PositiveIntegerField(validators=[MinValueValidator(1)] , default=1)
     image = models.ImageField(upload_to='student_image', null=True, blank=True)
     health = models.CharField(max_length=50)
-    x_item= models.ManyToManyField(Item,null=True, blank=True, related_name="x_items")
+    not_allowed = models.ManyToManyField(Item, related_name="not_alloweds")
     def __str__(self):
         return self.name	
 
@@ -78,12 +78,17 @@ class Order(models.Model):
             self.student.parent.wallet -= self.total
             self.student.parent.save()
 
+    def __str__(self):
+        return ("%s T %s") % (self.student.name ,self.order_date)
+
 
 class CartItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
-    # subtotal = models.DecimalField(default=0.00,max_digits=10, null=True, decimal_places=2)
     order = models.ForeignKey(Order, null=True, on_delete=models.CASCADE, related_name='cart_items')
+
+    def __str__(self):
+        return ("%s q %s") % (self.item.name , self.quantity)
 
  
   

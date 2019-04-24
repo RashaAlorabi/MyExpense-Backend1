@@ -23,7 +23,8 @@ from .views import (
     CartItemCreateView,
     OrderCreateView,
     CheckoutView,
-    RetrieveOrder
+    RetrieveOrder,
+    StudentXItemsView
 )
 
 urlpatterns = [
@@ -34,6 +35,7 @@ urlpatterns = [
     path('parent/profile/', ParentView.as_view(), name='parent-profile'),
     path('parent/students/', ParentStudentsView.as_view(), name='parent-students'),
     path('parent/wallet/',ParentWalletView.as_view(), name='parent-wallet'),
+    path('parent/<int:student_id>/x_items/', StudentXItemsView.as_view(), name='student-Xitems'),
    
     path('school/students/', SchoolStudentListView.as_view(), name='students-list'),
     path('student/add/', StudentCreateView.as_view(), name='student-add'),

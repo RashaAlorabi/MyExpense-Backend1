@@ -14,35 +14,6 @@ class School(models.Model):
     def __str__ (self):
         return self.name
 
-
-class Parent(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,)
-    image = models.ImageField(upload_to='parent_image', null=True, blank=True)
-    wallet = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
-    # NationalـId = models.PositiveIntegerField(primary_key=True, validators=[MinValueValidator(1), MaxValueValidator(9999999999)], null=False, blank=False)
-    def __str__(self):
-        return self.user.username
-
-Garad=[('Grade 1','Grade 1'),
-         ('Grade 2','Grade 2'),
-         ('Grade 3','Grade 3'),
-         ('Grade 4','Grade 4'),
-         ('Grade 5','Grade 5'),
-         ('Grade 6','Grade 6'),
-        ]
-class Student(models.Model):
-    name = models.CharField(max_length=50)
-    grade = models.CharField(choices=Garad, default=1, max_length=10)
-    parent = models.ForeignKey(Parent, on_delete = models.CASCADE, related_name='child')
-    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='students')
-    limit = models.PositiveIntegerField(validators=[MinValueValidator(1)] , default=1)
-    image = models.ImageField(upload_to='student_image', null=True, blank=True)
-    health = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name	
-
-        
 class Category(models.Model):
     name = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="schoolcategories")
@@ -62,7 +33,35 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
+class Parent(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,)
+    image = models.ImageField(upload_to='parent_image', null=True, blank=True)
+    wallet = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=0)
+    # NationalـId = models.PositiveIntegerField(primary_key=True, validators=[MinValueValidator(1), MaxValueValidator(9999999999)], null=False, blank=False)
+    def __str__(self):
+        return self.user.username
 
+Garad=[('Grade 1','Grade 1'),
+         ('Grade 2','Grade 2'),
+         ('Grade 3','Grade 3'),
+         ('Grade 4','Grade 4'),
+         ('Grade 5','Grade 5'),
+         ('Grade 6','Grade 6'),
+        ]
+
+class Student(models.Model):
+    name = models.CharField(max_length=50)
+    grade = models.CharField(choices=Garad, default=1, max_length=10)
+    parent = models.ForeignKey(Parent, on_delete = models.CASCADE, related_name='child')
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='students')
+    limit = models.PositiveIntegerField(validators=[MinValueValidator(1)] , default=1)
+    image = models.ImageField(upload_to='student_image', null=True, blank=True)
+    health = models.CharField(max_length=50)
+    x_item= models.ManyToManyField(Item,null=True, blank=True, related_name="x_items")
+    def __str__(self):
+        return self.name	
+
+    
 class Order(models.Model):
     total = models.DecimalField(max_digits=10, default=0, decimal_places=2)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='orders')

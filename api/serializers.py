@@ -50,10 +50,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'email']
 
-class ParentItemListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Student
-        fields = ['x_items']
 
 class StudentParentSerializer1(serializers.ModelSerializer):
     user = UserSerializer()
@@ -61,11 +57,13 @@ class StudentParentSerializer1(serializers.ModelSerializer):
         model = Parent
         fields = ['user', 'image', 'wallet'] 
 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
-        
+
+
 class ItemSerializer(serializers.ModelSerializer):
     category= CategorySerializer()
     class Meta:
@@ -81,24 +79,28 @@ class ItemSerializer(serializers.ModelSerializer):
             'school',
         ]
 
+
 class SchoolItemListSerializer(serializers.ModelSerializer):
     items = ItemSerializer(many=True)
-   
     class Meta:
         model = School
         fields = ['items']
 
+
 class parentItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['x_items']
+        fields = ['not_alloweds']
+
 
 class StudentListSerializer(serializers.ModelSerializer): 
     parent=StudentParentSerializer1()
-    school = parentItemSerializer()
+    not_allowed = ItemSerializer(many=True)
+    
     class Meta:
         model = Student
-        fields = ['id','name', 'grade', 'limit', 'health','parent','image','school']
+        fields = ['id','name','grade', 'limit', 'health','parent','image','not_allowed']
+
 
 class SchoolDetailSerializer(serializers.ModelSerializer):
     school_admin = UserSerializer()
@@ -114,10 +116,12 @@ class UpdateWalletSerializer(serializers.ModelSerializer):
         model = Parent
         fields = ['wallet']
 
+
 class UpdatelimitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['limit']
+
 
 class StudentCreateSerializer(serializers.ModelSerializer):
     parent_id = serializers.IntegerField(min_value=1, max_value=9999999999)
@@ -126,20 +130,18 @@ class StudentCreateSerializer(serializers.ModelSerializer):
         model = Student
         fields = ['parent_id', 'email', 'name', 'grade', 'limit', 'health','image']
 
+
 class StudentUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['name', 'grade', 'limit', 'health','image']
+
 
 class SchoolStudentListSerializer(serializers.ModelSerializer):
     students = StudentListSerializer(many=True)
     class Meta:
         model = School
         fields = ['students']
-
-
-        
-
 
 
 class SchoolCategoriesSerializer(serializers.ModelSerializer):
@@ -149,14 +151,11 @@ class SchoolCategoriesSerializer(serializers.ModelSerializer):
         fields = ['schoolcategories']
 
 
-
-
-
-
 class ItemCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ['name', 'price', 'description', 'stock', 'image', 'category',]
+
 
 class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
     item = ItemSerializer()
@@ -167,6 +166,7 @@ class CartItemCreateUpdateSerializer(serializers.ModelSerializer):
             'item',
             'quantity',
         ]
+
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -182,9 +182,10 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
     
 class StudentDetailSerializer(serializers.ModelSerializer):
     orders= RetrieveOrderSerializer(many=True)
+    school = SchoolItemListSerializer()
     class Meta:
         model = Student
-        fields = ['id','name', 'grade', 'limit', 'health','image', 'orders']
+        fields = ['id','name', 'grade', 'school', 'limit', 'health','image', 'orders']
 
 class ParentDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer()

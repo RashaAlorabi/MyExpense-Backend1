@@ -73,8 +73,11 @@ class SchoolAPIView(APIView):
 
     def get(self, request, format=None):
         try:
+            print("1")
             school = School.objects.get(school_admin=request.user)
+            print("school ==> ", school)
             serializer = self.serializer_class(school, context={'request': request})
+            print("serializer ==> ", serializer)
             return Response(serializer.data, status=HTTP_200_OK)
         except:
             return Response({"message": "You are not the admin for this school"}, status=HTTP_400_BAD_REQUEST)
@@ -131,7 +134,7 @@ class StudentXItemsView(RetrieveUpdateAPIView):
             student_obj = Student.objects.get(id= student_id["student_id"])
             parent_obj = Parent.objects.get(user= request.user)
             valid_data = serializer.data
-            student_obj.x_item.set(valid_data['x_items']) 
+            student_obj.not_allowed.set(valid_data['not_alloweds']) 
             student_obj.save()
             return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

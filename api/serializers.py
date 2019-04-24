@@ -109,13 +109,6 @@ class SchoolDetailSerializer(serializers.ModelSerializer):
         fields = ['name', 'school_admin', 'students', 'items']
 
 
-class ParentDetailSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    child = StudentListSerializer(many=True)
-    class Meta:
-        model = Parent
-        fields = ['user', 'child', 'wallet', 'image']
-
 class UpdateWalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Parent
@@ -127,7 +120,7 @@ class UpdatelimitSerializer(serializers.ModelSerializer):
         fields = ['limit']
 
 class StudentCreateSerializer(serializers.ModelSerializer):
-    parent_id = serializers.IntegerField(min_value=1, max_value=999999999)
+    parent_id = serializers.IntegerField(min_value=1, max_value=9999999999)
     email = serializers.EmailField()
     class Meta:
         model = Student
@@ -187,3 +180,16 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['id','total', 'paid', 'order_date', 'cart_items']
     
+class StudentDetailSerializer(serializers.ModelSerializer):
+    orders= RetrieveOrderSerializer(many=True)
+    class Meta:
+        model = Student
+        fields = ['id','name', 'grade', 'limit', 'health','image', 'orders']
+
+class ParentDetailSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    child = StudentDetailSerializer(many=True)
+    class Meta:
+        model = Parent
+        fields = ['user', 'child', 'wallet', 'image']
+

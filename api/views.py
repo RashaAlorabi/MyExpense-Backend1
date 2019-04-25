@@ -336,6 +336,12 @@ class CartItemCreateView(CreateAPIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
+class CartItemDeleteView(DestroyAPIView):
+    queryset = CartItem.objects.all()
+    lookup_field = 'id'
+    lookup_url_kwarg = 'item_id'
+
+
 class OrderCreateView(CreateAPIView):
     serializer_class = OrderSerializer
 

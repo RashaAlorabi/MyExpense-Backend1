@@ -89,8 +89,8 @@ class SchoolItemListSerializer(serializers.ModelSerializer):
 
 class parentItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Item
-        fields = ['not_alloweds']
+        model = Student
+        fields = ['not_allowed']
 
 
 class StudentListSerializer(serializers.ModelSerializer): 
@@ -192,9 +192,10 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
 class StudentDetailSerializer(serializers.ModelSerializer):
     orders= RetrieveOrderSerializer(many=True)
     school = SchoolItemListSerializer()
+    not_allowed = ItemSerializer(many=True)
     class Meta:
         model = Student
-        fields = ['id','name', 'grade', 'school', 'limit', 'health','image', 'orders']
+        fields = ['id','name', 'grade', 'school', 'limit', 'health','image', 'orders' , 'not_allowed']
 
 class ParentDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer()

@@ -92,7 +92,7 @@ class ParentView(APIView):
             serializer = self.serializer_class(parent, context={'request': request})
             return Response(serializer.data, status=HTTP_200_OK)
         except:
-            return Response({"message": "you are not a parent "}, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=HTTP_400_BAD_REQUEST)
 
 class ParentStudentsView(ListAPIView):
     serializer_class = StudentDetailSerializer
@@ -134,7 +134,7 @@ class StudentXItemsView(RetrieveUpdateAPIView):
             student_obj = Student.objects.get(id= student_id["student_id"])
             parent_obj = Parent.objects.get(user= request.user)
             valid_data = serializer.data
-            student_obj.not_allowed.set(valid_data['not_alloweds']) 
+            student_obj.not_allowed.set(valid_data['not_allowed']) 
             student_obj.save()
             return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

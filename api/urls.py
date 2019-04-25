@@ -2,11 +2,9 @@ from django.urls import path
 from rest_framework_jwt.views import obtain_jwt_token
 
 from .views import (
-    UserCreateAPIView,
     UserUpdateAPIView,
     SchoolAPIView,
     ParentView,
-    ParentStudentsView,
     ParentWalletView,
     SchoolStudentListView,
     StudentDetailView,
@@ -24,7 +22,8 @@ from .views import (
     OrderCreateView,
     CheckoutView,
     RetrieveOrder,
-    StudentXItemsView
+    StudentXItemsView,
+    pay
 )
 
 urlpatterns = [
@@ -33,9 +32,9 @@ urlpatterns = [
     path('school/profile/', SchoolAPIView.as_view(), name='school-profile'),
     
     path('parent/profile/', ParentView.as_view(), name='parent-profile'),
-    path('parent/students/', ParentStudentsView.as_view(), name='parent-students'),
-    path('parent/wallet/',ParentWalletView.as_view(), name='parent-wallet'),
+    path('parent/wallet/',ParentWalletView.as_view(), name='parent-wallet'), # test
     path('parent/<int:student_id>/x_items/', StudentXItemsView.as_view(), name='student-Xitems'),
+    path('parent/add/to/wallet/<int:wallet>/<int:parent_ID>', pay, name='add-to-wallet'), # test
    
     path('school/students/', SchoolStudentListView.as_view(), name='students-list'),
     path('student/add/', StudentCreateView.as_view(), name='student-add'),

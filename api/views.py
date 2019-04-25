@@ -94,6 +94,7 @@ class ParentView(APIView):
             return Response({"message": "اسم المستخدم او كلمة المرور غير صحيحه"}, status=HTTP_400_BAD_REQUEST)
 
 
+
 # remove 
 class ParentWalletView(APIView):
     serializer_class = UpdateWalletSerializer
@@ -122,8 +123,7 @@ class StudentXItemsView(RetrieveUpdateAPIView):
         serializer = self.serializer_class(data=my_data)
         if serializer.is_valid():
             valid_data = serializer.data
-            student_obj = self.get_queryset()
-            student_obj.not_allowed.set(valid_data['not_alloweds']) 
+            student_obj.not_allowed.set(valid_data['not_allowed'])
             student_obj.save()
             return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)

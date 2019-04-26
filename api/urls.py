@@ -19,6 +19,7 @@ from .views import (
     ItemUpdateView,
     ItemDeleteView,
     CartItemCreateView,
+    CartItemDeleteView,
     OrderCreateView,
     CheckoutView,
     RetrieveOrder,
@@ -33,7 +34,7 @@ urlpatterns = [
     path('school/profile/', SchoolAPIView.as_view(), name='school-profile'),
     
     path('parent/profile/', ParentView.as_view(), name='parent-profile'),
-    # path('parent/wallet/',ParentWalletView.as_view(), name='parent-wallet'), # test
+    path('parent/wallet/',ParentWalletView.as_view(), name='parent-wallet'), # test
     path('parent/<int:student_id>/x_items/', StudentXItemsView.as_view(), name='student-Xitems'),
     path('parent/add/to/wallet/<int:wallet>/<int:parent_ID>/', pay, name='add-to-wallet'), # test
     path('test/pay/', test_pay ),
@@ -57,6 +58,7 @@ urlpatterns = [
 
     path('create/<int:student_id>/order/', OrderCreateView.as_view(), name='create-order'),
     path('cartItem/<int:Order_id>/create/', CartItemCreateView.as_view(), name='cart-item-create'),
+    path('cartItem/<int:item_id>/delete/', CartItemDeleteView.as_view(), name='cart-item-delete'),
     path('checkout/<int:Order_id>/', CheckoutView.as_view(), name='checkout'),
     path('order/<int:order_id>/', RetrieveOrder.as_view(), name='retrieve-order')
  ]

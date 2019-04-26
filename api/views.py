@@ -42,11 +42,41 @@ from django.contrib.auth.models import User
 from .permissions import IsSchoolAdmin, IsParent
 from django.shortcuts import redirect
 import requests
+from rest_framework.decorators import api_view, renderer_classes
+from django.http import JsonResponse
+
+
+def test_pay(request):
+    url = "https://api.tap.company/v2/charges/%s" % (request.GET['tap_id'])
+    headers = {
+        'Authorization': "Bearer sk_test_XKokBfNWv6FIYuTMg5sLPjhJ",
+        'content-type': "application/json"
+        }
+    response = requests.get(url, headers=headers).json()
+    if response['status'] == "CAPTURED":
+        subject = "شحن المحفظة في نظام مصروفي"
+        message = "تم شحن الرصيد المدرسي بمبلغ %s" % (response['amount'])
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [response['customer']['email']]
+        send_mail( subject, message, email_from, recipient_list )
+        print("username ===> ",response['customer']['first_name'])
+        user = User.objects.get(username=response['customer']['first_name'])
+        parent_obj = Parent.objects.get(user= user)
+        parent_obj.wallet += response['amount']
+        parent_obj.save()
+        return JsonResponse({"msg": "Done"})
+    else:
+        subject = "شحن المحفظة في نظام مصروفي"
+        message = " لم يتم شحن الرصيد المدرسي بمبلغ %s" % (response['amount'])
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [response['customer']['email']]
+        send_mail( subject, message, email_from, recipient_list )
+        return redirect("myapp://")
 
 def pay(request, wallet, parent_ID):
     parent = Parent.objects.get(id= parent_ID)
     url = "https://api.tap.company/v2/charges"
-    payload = "{\"amount\":%s,\"currency\":\"SAR\",\"customer\":{\"first_name\":\"%s\",\"email\":\"%s\",\"phone\":{\"country_code\":\"966\",\"number\":\"501204333\"}},\"source\":{\"id\":\"src_all\"},\"redirect\":{\"url\":\"http://127.0.0.1:3000\"}}"%(wallet, parent.user.username, parent.user.email)
+    payload = "{\"amount\":%s,\"currency\":\"SAR\",\"customer\":{\"first_name\":\"%s\",\"email\":\"%s\",\"phone\":{\"country_code\":\"966\",\"number\":\"501204333\"}},\"source\":{\"id\":\"src_all\"},\"redirect\":{\"url\":\"http://127.0.0.1:8000/api/test/pay/\"}}"%(wallet, parent.user.username, parent.user.email)
     headers = {
         'authorization': "Bearer sk_test_XKokBfNWv6FIYuTMg5sLPjhJ",
         'content-type': "application/json"
@@ -56,7 +86,10 @@ def pay(request, wallet, parent_ID):
 
 
 class UserUpdateAPIView(RetrieveUpdateAPIView):
-    
+    serializer_class = UpdateWalletSerializer
+    def get_queryset(self):
+        return User.objects.get(id= self.request.user.id)
+
     def put(self, request, format=None):
         user= request.user
         serializer = UserUpdateSerializer(user, data=request.data)

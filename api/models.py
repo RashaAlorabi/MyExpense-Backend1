@@ -51,13 +51,13 @@ Garad=[('الصف الاول','الصف الاول'),
 
 class Student(models.Model):
     name = models.CharField(max_length=50)
-    grade = models.CharField(choices=Garad, default=1, max_length=10)
+    grade = models.CharField(choices=Garad, default=1, max_length=20)
     parent = models.ForeignKey(Parent, on_delete = models.CASCADE, related_name='child')
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='students')
     limit = models.PositiveIntegerField(validators=[MinValueValidator(1)] , default=1)
     image = models.ImageField(upload_to='student_image', null=True, blank=True)
     health = models.CharField(max_length=50)
-    not_allowed = models.ManyToManyField(Item, related_name="not_alloweds")
+    not_allowed = models.ManyToManyField(Item, related_name="not_alloweds", null=True, blank=True)
     def __str__(self):
         return self.name	
 

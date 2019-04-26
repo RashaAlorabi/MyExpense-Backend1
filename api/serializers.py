@@ -173,5 +173,5 @@ class ParentDetailSerializer(serializers.ModelSerializer):
     child = StudentDetailSerializer(many=True)
     class Meta:
         model = Parent
-        fields = ['user', 'child', 'wallet', 'image']
+        fields = ['id','user', 'child', 'wallet', 'image']
 

@@ -25,6 +25,7 @@ from .views import (
     RetrieveOrder,
     StudentXItemsView,
     pay,
+    test_pay
 )
 
 urlpatterns = [
@@ -35,7 +36,9 @@ urlpatterns = [
     path('parent/profile/', ParentView.as_view(), name='parent-profile'),
     path('parent/wallet/',ParentWalletView.as_view(), name='parent-wallet'), # test
     path('parent/<int:student_id>/x_items/', StudentXItemsView.as_view(), name='student-Xitems'),
-    path('parent/add/to/wallet/<int:wallet>/<int:parent_ID>', pay, name='add-to-wallet'), # test
+    path('parent/add/to/wallet/<int:wallet>/<int:parent_ID>/', pay, name='add-to-wallet'), # test
+    path('test/pay/', test_pay ),
+    path('parent/update/profile/', UserUpdateAPIView.as_view(), name="parent-update"),
    
     path('school/students/', SchoolStudentListView.as_view(), name='students-list'),
     path('student/add/', StudentCreateView.as_view(), name='student-add'),

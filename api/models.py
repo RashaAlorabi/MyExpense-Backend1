@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.conf import settings
+from django.core.mail import send_mail
 
 
         
@@ -57,7 +58,7 @@ class Student(models.Model):
     limit = models.PositiveIntegerField(validators=[MinValueValidator(1)] , default=1)
     image = models.ImageField(upload_to='student_image', null=True, blank=True)
     health = models.CharField(max_length=50)
-    not_allowed = models.ManyToManyField(Item, related_name="not_alloweds", null=True, blank=True)
+    not_allowed = models.ManyToManyField(Item, related_name="not_alloweds",  blank=True)
     def __str__(self):
         return self.name	
 
@@ -77,7 +78,14 @@ class Order(models.Model):
         if self.paid:
             self.student.parent.wallet -= self.total
             self.student.parent.save()
-
+        if self.student.parent.wallet <=10:
+            subject = "رصيد المحفظة اوشك علي الانتهاء"
+            message =  ("السلام عليكم نود ان نبلغكم ان المبلغ المتبقي في المحفظة الخاصة بكم هو %d  نرجو منكم اعادة شحنها في اقرب وقت ممكن ") %(self.student.parent.wallet)
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [self.student.parent.user.email]
+            print(recipient_list,"recipient_list")
+            send_mail( subject, message, email_from, recipient_list )
+   
     def __str__(self):
         return ("%s T %s") % (self.student.name ,self.order_date)
 

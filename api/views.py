@@ -86,16 +86,21 @@ def pay(request, wallet, parent_ID):
 
 
 class UserUpdateAPIView(RetrieveUpdateAPIView):
-    serializer_class = UpdateWalletSerializer
+    serializer_class = UserUpdateSerializer
     def get_queryset(self):
-        return User.objects.get(id= self.request.user.id)
+        return User.objects.get(id= self.kwargs["user_id"])
 
-    def put(self, request, format=None):
-        user= request.user
-        serializer = UserUpdateSerializer(user, data=request.data)
+    def put(self, request, *args, **kwargs):
+        my_data = request.data
+        serializer = self.serializer_class(data=my_data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(UserSerializer(user,context={'request': request}).data, status=HTTP_200_OK)
+            valid_data = serializer.data
+            parent_obj=  self.get_queryset()
+            parent_obj.first_name = valid_data['first_name']
+            parent_obj.last_name = valid_data['last_name']
+            parent_obj.email = valid_data['email']
+            parent_obj.save()
+            return Response(valid_data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
@@ -105,11 +110,8 @@ class SchoolAPIView(APIView):
 
     def get(self, request, format=None):
         try:
-            print("1")
             school = School.objects.get(school_admin=request.user)
-            print("school ==> ", school)
             serializer = self.serializer_class(school, context={'request': request})
-            print("serializer ==> ", serializer)
             return Response(serializer.data, status=HTTP_200_OK)
         except:
             return Response({"message": "أسم المستخدم او كلمة المرور غير صحيحة"}, status=HTTP_400_BAD_REQUEST)
@@ -200,8 +202,6 @@ class StudentDetailView(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated, ]
 
 
-
-
 # hear will change this list 
 class StudentCreateView(APIView):
     serializer_class = StudentCreateSerializer
@@ -285,12 +285,9 @@ class ItemCreateView(CreateAPIView):
     parser_class = (FileUploadParser,)
     def post(self, request, *args, **kwargs):
         my_data = request.data
-        print("my_data ==> ", my_data)
         serializer = self.serializer_class(data=my_data, )
         if serializer.is_valid():
-            print("serializer ==> ", serializer)
             valid_data = serializer.data
-            print("valid_data ==>  ", valid_data)
             school_obj = School.objects.get(school_admin= request.user)
             new_item = {
                 'name': valid_data['name'],
